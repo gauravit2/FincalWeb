@@ -3,38 +3,15 @@ import 'package:fincalweb_project/components/Home_page_components/stat_item_cont
 import 'package:fincalweb_project/helper/menu_bar.dart';
 import 'package:fincalweb_project/helper/size_config.dart';
 import 'package:fincalweb_project/helper/hover_image.dart';
-
+import 'package:fincalweb_project/helper/breadcrumb_navBar.dart';// Import the BreadcrumbNavBar
+import 'package:fincalweb_project/view/get_started.dart';
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
+class _HomePageState extends State<HomePage> {
   List<bool> _isHoveringStatItems = [false, false, false];
-  late AnimationController _controller;
-  late Animation<Offset> _animation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(seconds: 2),
-      vsync: this,
-    )..repeat(reverse: true);
-
-    _animation = Tween<Offset>(
-      begin: Offset(7.w, -9.h),
-      end: Offset(15.w, -15.h),
-    ).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +31,12 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             physics: BouncingScrollPhysics(),
             padding: EdgeInsets.all(2.w),
             children: [
+              // Breadcrumb Navigation Bar
+              BreadcrumbNavBar(
+                breadcrumbItems: ['Home'], // Breadcrumb items
+                routes: ['/'], // Corresponding routes
+              ),
+
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -173,7 +156,13 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                               SizedBox(height: 3.h),
                               Center(
                                 child: ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => AllCalculators()),
+                                    );
+                                  },
+
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.teal.shade900,
                                     foregroundColor: Colors.white,
@@ -210,31 +199,25 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                                       color: Colors.black,
                                     ),
                                   ),
-                                  SizedBox(height: 4.h),
+                                  SizedBox(height: 2.h),
                                   Row(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Expanded(
                                         flex: 2,
-                                        child: AnimatedBuilder(
-                                          animation: _animation,
-                                          builder: (context, child) {
-                                            return Align(
-                                              alignment: Alignment.centerLeft,
-                                              child: Transform.translate(
-                                                offset: _animation.value,
-                                                child: Image.network(
-                                                  'assets/images/pie.PNG',
-                                                  height: 40.h,
-                                                  width: 40.w,
-                                                  fit: BoxFit.fitWidth,
-                                                ),
-                                              ),
-                                            );
-                                          },
+                                        child: Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Transform.translate(
+                                            offset: Offset(13.w, -9.h), // Shift right (X-axis) and upwards (Y-axis)
+                                            child: Image.network(
+                                              'assets/images/pie.PNG',
+                                              height: 40.h,
+                                              width: 40.w,
+                                              fit: BoxFit.fitWidth,
+                                            ),
+                                          ),
                                         ),
                                       ),
-
                                       SizedBox(width: 2.w),
                                       Expanded(
                                         flex: 1,
@@ -252,12 +235,10 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                                                   fit: BoxFit.cover,
                                                 ),
                                               ),
-
                                             ],
                                           ),
                                         ),
                                       ),
-
                                     ],
                                   ),
                                 ],
