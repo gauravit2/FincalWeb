@@ -75,12 +75,15 @@ flutter:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 assets:
-  - assets/images/bank.jpg
-  - assets/images/post.jpg
+  - assets/images/bank1.png
+  - assets/images/post.png
+  - assets/images/emi1.png
   - assets/images/emi.png
   - assets/images/mobile.jpg
   - assets/images/app.PNG
   - assets/images/pie.PNG
+  - assets/images/logo1.jpeg
+  - assets/images/googleplay.png
   - assets/calculator_icons/loan.png
   - assets/calculator_icons/fd.png
   - assets/calculator_icons/kvp.png

@@ -3,7 +3,6 @@ import 'package:fincalweb_project/helper/size_config.dart';
 import 'package:fincalweb_project/components/Home_page_components/stat_item.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-
 class StatItemContent extends StatelessWidget {
   final List<bool> isHoveringStatItems;
   final Function(int) onHover;
@@ -47,7 +46,7 @@ class StatItemContent extends StatelessWidget {
               foregroundColor: Colors.white,
               padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 4.w),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(20),
               ),
             ),
             child: Text(
@@ -58,9 +57,31 @@ class StatItemContent extends StatelessWidget {
           SizedBox(height: 2.h),
           Row(
             children: [
-              Icon(Icons.star, color: Colors.amber, size: 1.5.t),
-              SizedBox(width: 2.w),
-              Text('4.7 Play store', style: TextStyle(fontSize: 1.5.t)),
+              // Play Store icon
+              Image.network(
+                'assets/images/googleplay.png',
+                height: 24.0, // Adjust the size of the icon as per your UI
+              ),
+              SizedBox(width: 8.0),
+              Text(
+                '4.7', // Rating value
+                style: TextStyle(
+                  fontSize: 1.5.t,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(width: 4.0),
+              Icon(
+                Icons.star,
+                color: Colors.amber,
+                size: 1.5.t,
+              ),
+              SizedBox(width: 4.0),
+              Text(
+                'Play store',
+                style: TextStyle(fontSize: 1.2.t),
+              ),
+
             ],
           ),
           SizedBox(height: 1.h),

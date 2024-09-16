@@ -3,8 +3,9 @@ import 'package:fincalweb_project/components/Home_page_components/stat_item_cont
 import 'package:fincalweb_project/helper/menu_bar.dart';
 import 'package:fincalweb_project/helper/size_config.dart';
 import 'package:fincalweb_project/helper/hover_image.dart';
-import 'package:fincalweb_project/helper/breadcrumb_navBar.dart';// Import the BreadcrumbNavBar
+import 'package:fincalweb_project/helper/breadcrumb_navBar.dart'; // Import the BreadcrumbNavBar
 import 'package:fincalweb_project/view/get_started.dart';
+
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -33,8 +34,9 @@ class _HomePageState extends State<HomePage> {
             children: [
               // Breadcrumb Navigation Bar
               BreadcrumbNavBar(
-                breadcrumbItems: ['Home'], // Breadcrumb items
-                routes: ['/'], // Corresponding routes
+                breadcrumbItems: [''], // Breadcrumb items
+                routes: ['/'],
+                currentRoute: ModalRoute.of(context)?.settings.name ?? '', // Corresponding routes
               ),
 
               Row(
@@ -76,27 +78,15 @@ class _HomePageState extends State<HomePage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                'All Financial Calculators in Fingertip',
-                                style: TextStyle(
-                                  fontSize: 2.t,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 1.5,
-                                  foreground: Paint()
-                                    ..shader = LinearGradient(
-                                      colors: <Color>[
-                                        Colors.black,
-                                        Colors.black,
-                                      ],
-                                    ).createShader(
-                                        Rect.fromLTWH(0.0, 0.0, 300.0, 100.0)),
-                                  shadows: [
-                                    Shadow(
-                                      blurRadius: 10.0,
-                                      color: Colors.black.withOpacity(0.7),
-                                      offset: Offset(2.0, 2.0),
-                                    ),
-                                  ],
+                              // Centered Text
+                              Center(
+                                child: Text(
+                                  'All Financial Calculators in Fingertip',
+                                  style: TextStyle(
+                                    color: Colors.teal.shade800,
+                                    fontSize: 2.t,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                               SizedBox(height: 2.h),
@@ -106,10 +96,14 @@ class _HomePageState extends State<HomePage> {
                                   Expanded(
                                     child: Column(
                                       children: [
-                                        HoverImage(
-                                          imageUrl: 'assets/images/bank.jpg',
-                                          height: 13.0,
-                                          width: 45.0,
+                                        Container(
+                                          color: Colors.white, // Set the background color to white
+                                          padding: EdgeInsets.all(1.w), // Optional: Add padding
+                                          child: HoverImage(
+                                            imageUrl: 'assets/images/bank1.png',
+                                            height: 15.0,
+                                            width: 45.0,
+                                          ),
                                         ),
                                         SizedBox(height: 1.h),
                                         Text(
@@ -122,10 +116,14 @@ class _HomePageState extends State<HomePage> {
                                   Expanded(
                                     child: Column(
                                       children: [
-                                        HoverImage(
-                                          imageUrl: 'assets/images/post.jpg',
-                                          height: 13.0,
-                                          width: 45.0,
+                                        Container(
+                                          color: Colors.white, // Set the background color to white
+                                          padding: EdgeInsets.all(1.w), // Optional: Add padding
+                                          child: HoverImage(
+                                            imageUrl: 'assets/images/post.png',
+                                            height: 15.0,
+                                            width: 45.0,
+                                          ),
                                         ),
                                         SizedBox(height: 1.h),
                                         Text(
@@ -138,10 +136,14 @@ class _HomePageState extends State<HomePage> {
                                   Expanded(
                                     child: Column(
                                       children: [
-                                        HoverImage(
-                                          imageUrl: 'assets/images/emi.png',
-                                          height: 13.0,
-                                          width: 45.0,
+                                        Container(
+                                          color: Colors.white, // Set the background color to white
+                                          padding: EdgeInsets.all(1.w), // Optional: Add padding
+                                          child: HoverImage(
+                                            imageUrl: 'assets/images/emi1.png',
+                                            height: 15.0,
+                                            width: 45.0,
+                                          ),
                                         ),
                                         SizedBox(height: 1.h),
                                         Text(
@@ -159,17 +161,17 @@ class _HomePageState extends State<HomePage> {
                                   onPressed: () {
                                     Navigator.push(
                                       context,
-                                      MaterialPageRoute(builder: (context) => AllCalculators()),
+                                      MaterialPageRoute(
+                                          builder: (context) => AllCalculators(title: '', content: '',)),
                                     );
                                   },
-
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.teal.shade900,
                                     foregroundColor: Colors.white,
                                     padding: EdgeInsets.symmetric(
                                         vertical: 1.h, horizontal: 4.w),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(15),
+                                      borderRadius: BorderRadius.circular(20),
                                     ),
                                   ),
                                   child: Text(

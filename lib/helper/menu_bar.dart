@@ -1,23 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:fincalweb_project/view/get_started.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:fincalweb_project/helper/size_config.dart';
-
-
-class CalculatorPage extends StatelessWidget {
-  final String title;
-  final String content;
-
-  CalculatorPage({required this.title, required this.content});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: Center(child: Text(content, style: TextStyle(fontSize: 2.t))),
-    );
-  }
-}
+import 'package:fincalweb_project/view//FD_calculator.dart'; // Import FD Calculator
 
 class CustomMenuBar extends StatelessWidget {
   @override
@@ -34,7 +20,8 @@ class CustomMenuBar extends StatelessWidget {
             ),
             drawer: _buildFullScreenDrawer(context),
             body: Center(
-              child: Text('Select an option from the drawer', style: TextStyle(fontSize: 2.t,color:Colors.teal.shade400)),
+              child: Text('Select an option from the drawer',
+                  style: TextStyle(fontSize: 2.t, color: Colors.teal.shade700)),
             ),
           );
         } else {
@@ -48,32 +35,32 @@ class CustomMenuBar extends StatelessWidget {
                 Spacer(),
                 _buildMenuDropdown(
                   title: 'Loan Calculators',
-                  items: {'EMI Calculator': 'EMI Calculator Content'},
+                  items: {'EMI Calculator': AllCalculators(title: 'EMI Calculator', content: 'EMI Calculator Content')},
                   context: context,
                 ),
                 _buildMenuDropdown(
                   title: 'Bank Calculators',
                   items: {
-                    'FD Calculator': 'FD Calculator Content',
-                    'RD Calculator': 'RD Calculator Content',
+                    'FD Calculator': FdCalculator(), // FD Calculator widget
+                    'RD Calculator': AllCalculators(title: 'RD Calculator', content: 'RD Calculator Content'),
                   },
                   context: context,
                 ),
                 _buildMenuDropdown(
                   title: 'Post Calculators',
                   items: {
-                    'PPF Calculator': 'PPF Calculator Content',
-                    'NSC Calculator': 'NSC Calculator Content',
-                    'KVP Calculator': 'KVP Calculator Content',
-                    'SCSS Calculator': 'SCSS Calculator Content',
+                    'PPF Calculator': AllCalculators(title: 'PPF Calculator', content: 'PPF Calculator Content'),
+                    'NSC Calculator': AllCalculators(title: 'NSC Calculator', content: 'NSC Calculator Content'),
+                    'KVP Calculator': AllCalculators(title: 'KVP Calculator', content: 'KVP Calculator Content'),
+                    'SCSS Calculator': AllCalculators(title: 'SCSS Calculator', content: 'SCSS Calculator Content'),
                   },
                   context: context,
                 ),
                 _buildMenuDropdown(
                   title: 'Market Calculators',
                   items: {
-                    'SIP Calculator': 'SIP Calculator Content',
-                    'MF Calculator': 'MF Calculator Content',
+                    'SIP Calculator': AllCalculators(title: 'SIP Calculator', content: 'SIP Calculator Content'),
+                    'MF Calculator': AllCalculators(title: 'MF Calculator', content: 'MF Calculator Content'),
                   },
                   context: context,
                 ),
@@ -86,99 +73,9 @@ class CustomMenuBar extends StatelessWidget {
     );
   }
 
-  Widget _buildFullScreenDrawer(BuildContext context) {
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          DrawerHeader(
-            decoration: BoxDecoration(color: Colors.teal.shade600),
-            child: Center(child: _buildAppName()),
-          ),
-          _buildDrawerItem(
-            context: context,
-            title: 'Loan Calculators',
-            items: {'EMI Calculator': 'EMI Calculator Content'},
-          ),
-          _buildDrawerItem(
-            context: context,
-            title: 'Bank Calculators',
-            items: {
-              'FD Calculator': 'FD Calculator Content',
-              'RD Calculator': 'RD Calculator Content',
-            },
-          ),
-          _buildDrawerItem(
-            context: context,
-            title: 'Post Calculators',
-            items: {
-              'PPF Calculator': 'PPF Calculator Content',
-              'NSC Calculator': 'NSC Calculator Content',
-              'KVP Calculator': 'KVP Calculator Content',
-              'SCSS Calculator': 'SCSS Calculator Content',
-            },
-          ),
-          _buildDrawerItem(
-            context: context,
-            title: 'Market Calculators',
-            items: {
-              'SIP Calculator': 'SIP Calculator Content',
-              'MF Calculator': 'MF Calculator Content',
-            },
-          ),
-          ListTile(
-            title: Text(
-              'Download Android App',
-              style: TextStyle(fontSize: 1.3.t),
-            ),
-            onTap: () {
-              _launchURL();
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _launchURL() async {
-    final String _url = 'https://play.google.com/store/apps/details?id=com.gp.emicalculator';
-
-    if (await canLaunch(_url)) {
-      await launch(_url);
-    } else {
-      throw 'Could not launch $_url';
-    }
-  }
-  Widget _buildAppName() {
-    return Row(
-      children: [
-        ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRyO4vk8ReKn7xq_qAGJ3hzG6AinVf3q7rWAw3yjKHTMAUiJnDPILtvwK8kGg&s',
-            height: 5.t,
-            width: 5.t,
-            fit: BoxFit.fill,
-            placeholder: (context, url) => CircularProgressIndicator(), // Optional: loading placeholder
-            errorWidget: (context, url, error) => Icon(Icons.error), // Optional: error widget
-          ),
-        ),
-        SizedBox(width: 2.w),
-        Text(
-          'Fincal',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 2.t,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
-    );
-  }
-
-
   Widget _buildMenuDropdown({
     required String title,
-    required Map<String, String> items,
+    required Map<String, Widget> items, // Map stores widgets instead of strings
     required BuildContext context,
   }) {
     return Padding(
@@ -201,19 +98,122 @@ class CustomMenuBar extends StatelessWidget {
           );
         }).toList(),
         onChanged: (value) {
-          if (value != null) {
+          if (value != null && items[value] != null) {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => CalculatorPage(
-                  title: value,
-                  content: items[value] ?? '',
-                ),
+                builder: (context) => items[value]!, // Navigate to the widget
               ),
             );
           }
         },
       ),
+    );
+  }
+
+  Widget _buildFullScreenDrawer(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: BoxDecoration(color: Colors.teal.shade600),
+            child: Center(child: _buildAppName()),
+          ),
+          _buildDrawerItem(
+            context: context,
+            title: 'Loan Calculators',
+            items: {'EMI Calculator': AllCalculators(title: 'EMI Calculator', content: 'EMI Calculator Content')},
+          ),
+          _buildDrawerItem(
+            context: context,
+            title: 'Bank Calculators',
+            items: {
+              'FD Calculator': FdCalculator(), // FD Calculator widget
+              'RD Calculator': AllCalculators(title: 'RD Calculator', content: 'RD Calculator Content'),
+            },
+          ),
+          _buildDrawerItem(
+            context: context,
+            title: 'Post Calculators',
+            items: {
+              'PPF Calculator': AllCalculators(title: 'PPF Calculator', content: 'PPF Calculator Content'),
+              'NSC Calculator': AllCalculators(title: 'NSC Calculator', content: 'NSC Calculator Content'),
+              'KVP Calculator': AllCalculators(title: 'KVP Calculator', content: 'KVP Calculator Content'),
+              'SCSS Calculator': AllCalculators(title: 'SCSS Calculator', content: 'SCSS Calculator Content'),
+            },
+          ),
+          _buildDrawerItem(
+            context: context,
+            title: 'Market Calculators',
+            items: {
+              'SIP Calculator': AllCalculators(title: 'SIP Calculator', content: 'SIP Calculator Content'),
+              'MF Calculator': AllCalculators(title: 'MF Calculator', content: 'MF Calculator Content'),
+            },
+          ),
+          ListTile(
+            title: Text(
+              'Download Android App',
+              style: TextStyle(fontSize: 1.3.t),
+            ),
+            onTap: () {
+              _launchURL();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAppName() {
+    return Row(
+      children: [
+        ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: 'assets/images/logo1.jpeg',
+            height: 4.t,
+            width: 4.t,
+            fit: BoxFit.fill,
+            placeholder: (context, url) => CircularProgressIndicator(),
+            errorWidget: (context, url, error) => Icon(Icons.error),
+          ),
+        ),
+        SizedBox(width: 2.w),
+        Text(
+          'Fincal',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 2.t,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDrawerItem({
+    required BuildContext context,
+    required String title,
+    required Map<String, Widget> items, // Map stores widgets instead of strings
+  }) {
+    return ExpansionTile(
+      title: Text(title, style: TextStyle(fontSize: 1.3.t)),
+      children: items.keys.map((String item) {
+        return ListTile(
+          title: Text(item),
+          onTap: () {
+            Navigator.pop(context);
+            if (items[item] != null) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => items[item]!, // Navigate to the widget
+                ),
+              );
+            }
+          },
+        );
+      }).toList(),
     );
   }
 
@@ -230,32 +230,13 @@ class CustomMenuBar extends StatelessWidget {
     );
   }
 
-  Widget _buildDrawerItem({
-    required BuildContext context,
-    required String title,
-    required Map<String, String> items,
-  }) {
-    return ExpansionTile(
-      title: Text(title, style: TextStyle(fontSize: 1.3.t)),
-      children: items.keys.map((String item) {
-        return ListTile(
-          title: Text(item),
-          onTap: () {
-            Navigator.pop(context);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => CalculatorPage(
-                  title: item,
-                  content: items[item] ?? '',
-                ),
-              ),
-            );
-          },
-        );
-      }).toList(),
-    );
+  void _launchURL() async {
+    final String _url =
+        'https://play.google.com/store/apps/details?id=com.gp.emicalculator';
+    if (await canLaunch(_url)) {
+      await launch(_url);
+    } else {
+      throw 'Could not launch $_url';
+    }
   }
 }
-
-
