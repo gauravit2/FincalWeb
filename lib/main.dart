@@ -1,4 +1,5 @@
-import 'package:fincalweb_project/view/FD_calculator.dart';
+import 'package:fincalweb_project/view/Calculators/FD_calculator.dart';
+import 'package:fincalweb_project/view/Calculators/RD_calculator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'helper/get_di.dart' as di;
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
                   '/': (context) => HomePage(),
                   '/get_started': (context) => AllCalculators(title: '', content: '',),
                   '/FD_calculator':(context) => FdCalculator(),
+                  '/RD_calculator':(context) => RdCalculator()
                 },
                 debugShowCheckedModeBanner: false,
               );

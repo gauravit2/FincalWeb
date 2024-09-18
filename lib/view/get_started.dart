@@ -76,7 +76,11 @@ class AllCalculators extends StatelessWidget {
                       // Handle navigation to specific calculator
                       if (cardData[index]['title'] == 'FD Calculator') {
                         Navigator.pushNamed(context, '/FD_calculator');
-                      } else {
+                      }
+                      if (cardData[index]['title'] == 'RD Calculator') {
+                        Navigator.pushNamed(context, '/RD_calculator');
+                      }
+                      else {
                         // Handle other calculator navigation or display a message
                         // Navigator.pushNamed(context, '/other-calculator');
                       }

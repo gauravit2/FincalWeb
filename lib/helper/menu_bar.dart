@@ -1,9 +1,11 @@
+import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:fincalweb_project/view/get_started.dart';
+import 'package:fincalweb_project/view/Calculators/RD_calculator.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:fincalweb_project/helper/size_config.dart';
-import 'package:fincalweb_project/view//FD_calculator.dart'; // Import FD Calculator
+import 'package:fincalweb_project/view/Calculators/FD_calculator.dart'; // Import FD Calculator
+import 'package:fincalweb_project/view/get_started.dart';
 
 class CustomMenuBar extends StatelessWidget {
   @override
@@ -20,8 +22,10 @@ class CustomMenuBar extends StatelessWidget {
             ),
             drawer: _buildFullScreenDrawer(context),
             body: Center(
-              child: Text('Select an option from the drawer',
-                  style: TextStyle(fontSize: 2.t, color: Colors.teal.shade700)),
+              child: Text(
+                'Select an option from the drawer',
+                style: TextStyle(fontSize: 2.t, color: Colors.teal.shade700),
+              ),
             ),
           );
         } else {
@@ -29,42 +33,71 @@ class CustomMenuBar extends StatelessWidget {
             color: Colors.teal.shade800,
             padding: EdgeInsets.symmetric(horizontal: 10.w),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildAppName(),
-                Spacer(),
-                _buildMenuDropdown(
-                  title: 'Loan Calculators',
-                  items: {'EMI Calculator': AllCalculators(title: 'EMI Calculator', content: 'EMI Calculator Content')},
-                  context: context,
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      customDropDown(
+                        title: 'Loan Calculators',
+                        items: {
+                          'EMI Calculator': AllCalculators(
+                              title: 'EMI Calculator',
+                              content: 'EMI Calculator Content'
+                          ),
+                        },
+                        context: context,
+                      ),
+                      customDropDown(
+                        title: 'Bank Calculators',
+                        items: {
+                          'FD Calculator': FdCalculator(),
+                          'RD Calculator': RdCalculator(),
+                        },
+                        context: context,
+                      ),
+                      customDropDown(
+                        title: 'Post Calculators',
+                        items: {
+                          'PPF Calculator': AllCalculators(
+                              title: 'PPF Calculator',
+                              content: 'PPF Calculator Content'
+                          ),
+                          'NSC Calculator': AllCalculators(
+                              title: 'NSC Calculator',
+                              content: 'NSC Calculator Content'
+                          ),
+                          'KVP Calculator': AllCalculators(
+                              title: 'KVP Calculator',
+                              content: 'KVP Calculator Content'
+                          ),
+                          'SCSS Calculator': AllCalculators(
+                              title: 'SCSS Calculator',
+                              content: 'SCSS Calculator Content'
+                          ),
+                        },
+                        context: context,
+                      ),
+                      customDropDown(
+                        title: 'Market Calculators',
+                        items: {
+                          'SIP Calculator': AllCalculators(
+                              title: 'SIP Calculator',
+                              content: 'SIP Calculator Content'
+                          ),
+                          'MF Calculator': AllCalculators(
+                              title: 'MF Calculator',
+                              content: 'MF Calculator Content'
+                          ),
+                        },
+                        context: context,
+                      ),
+                      _buildDownloadButton(),
+                    ],
+                  ),
                 ),
-                _buildMenuDropdown(
-                  title: 'Bank Calculators',
-                  items: {
-                    'FD Calculator': FdCalculator(), // FD Calculator widget
-                    'RD Calculator': AllCalculators(title: 'RD Calculator', content: 'RD Calculator Content'),
-                  },
-                  context: context,
-                ),
-                _buildMenuDropdown(
-                  title: 'Post Calculators',
-                  items: {
-                    'PPF Calculator': AllCalculators(title: 'PPF Calculator', content: 'PPF Calculator Content'),
-                    'NSC Calculator': AllCalculators(title: 'NSC Calculator', content: 'NSC Calculator Content'),
-                    'KVP Calculator': AllCalculators(title: 'KVP Calculator', content: 'KVP Calculator Content'),
-                    'SCSS Calculator': AllCalculators(title: 'SCSS Calculator', content: 'SCSS Calculator Content'),
-                  },
-                  context: context,
-                ),
-                _buildMenuDropdown(
-                  title: 'Market Calculators',
-                  items: {
-                    'SIP Calculator': AllCalculators(title: 'SIP Calculator', content: 'SIP Calculator Content'),
-                    'MF Calculator': AllCalculators(title: 'MF Calculator', content: 'MF Calculator Content'),
-                  },
-                  context: context,
-                ),
-                _buildDownloadButton(),
               ],
             ),
           );
@@ -73,36 +106,32 @@ class CustomMenuBar extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuDropdown({
+  Widget customDropDown({
     required String title,
-    required Map<String, Widget> items, // Map stores widgets instead of strings
+    required Map<String, Widget> items,
     required BuildContext context,
   }) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 1.5.w),
-      child: DropdownButton<String>(
-        dropdownColor: Colors.teal.shade300,
-        underline: SizedBox.shrink(),
-        icon: Icon(Icons.arrow_drop_down, color: Colors.teal),
-        hint: Text(
-          title,
-          style: TextStyle(color: Colors.white, fontSize: 1.2.t),
+    List<String> itemKeys = items.keys.toList();
+    return Container(
+      width: 200,
+      child: CustomDropdown(
+        decoration: CustomDropdownDecoration(
+          listItemStyle: TextStyle(color: Colors.white),
+          hintStyle: TextStyle(color: Colors.white),
+          closedFillColor: Colors.teal.shade800,
+          expandedShadow: [BoxShadow(color: Colors.transparent)],
+          expandedBorderRadius: BorderRadius.circular(5.0),
+          expandedFillColor: Colors.teal.shade800,
+          closedBorderRadius: BorderRadius.circular(0),
         ),
-        items: items.keys.map((String item) {
-          return DropdownMenuItem<String>(
-            value: item,
-            child: Text(
-              item,
-              style: TextStyle(color: Colors.white, fontSize: 1.2.t),
-            ),
-          );
-        }).toList(),
+        hintText: title,
+        items: itemKeys,
         onChanged: (value) {
           if (value != null && items[value] != null) {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => items[value]!, // Navigate to the widget
+                builder: (context) => items[value]!,
               ),
             );
           }
@@ -123,32 +152,55 @@ class CustomMenuBar extends StatelessWidget {
           _buildDrawerItem(
             context: context,
             title: 'Loan Calculators',
-            items: {'EMI Calculator': AllCalculators(title: 'EMI Calculator', content: 'EMI Calculator Content')},
+            items: {
+              'EMI Calculator': AllCalculators(
+                  title: 'EMI Calculator',
+                  content: 'EMI Calculator Content'
+              ),
+            },
           ),
           _buildDrawerItem(
             context: context,
             title: 'Bank Calculators',
             items: {
-              'FD Calculator': FdCalculator(), // FD Calculator widget
-              'RD Calculator': AllCalculators(title: 'RD Calculator', content: 'RD Calculator Content'),
+              'FD Calculator': FdCalculator(),
+              'RD Calculator': RdCalculator()
             },
           ),
           _buildDrawerItem(
             context: context,
             title: 'Post Calculators',
             items: {
-              'PPF Calculator': AllCalculators(title: 'PPF Calculator', content: 'PPF Calculator Content'),
-              'NSC Calculator': AllCalculators(title: 'NSC Calculator', content: 'NSC Calculator Content'),
-              'KVP Calculator': AllCalculators(title: 'KVP Calculator', content: 'KVP Calculator Content'),
-              'SCSS Calculator': AllCalculators(title: 'SCSS Calculator', content: 'SCSS Calculator Content'),
+              'PPF Calculator': AllCalculators(
+                  title: 'PPF Calculator',
+                  content: 'PPF Calculator Content'
+              ),
+              'NSC Calculator': AllCalculators(
+                  title: 'NSC Calculator',
+                  content: 'NSC Calculator Content'
+              ),
+              'KVP Calculator': AllCalculators(
+                  title: 'KVP Calculator',
+                  content: 'KVP Calculator Content'
+              ),
+              'SCSS Calculator': AllCalculators(
+                  title: 'SCSS Calculator',
+                  content: 'SCSS Calculator Content'
+              ),
             },
           ),
           _buildDrawerItem(
             context: context,
             title: 'Market Calculators',
             items: {
-              'SIP Calculator': AllCalculators(title: 'SIP Calculator', content: 'SIP Calculator Content'),
-              'MF Calculator': AllCalculators(title: 'MF Calculator', content: 'MF Calculator Content'),
+              'SIP Calculator': AllCalculators(
+                  title: 'SIP Calculator',
+                  content: 'SIP Calculator Content'
+              ),
+              'MF Calculator': AllCalculators(
+                  title: 'MF Calculator',
+                  content: 'MF Calculator Content'
+              ),
             },
           ),
           ListTile(
@@ -194,7 +246,7 @@ class CustomMenuBar extends StatelessWidget {
   Widget _buildDrawerItem({
     required BuildContext context,
     required String title,
-    required Map<String, Widget> items, // Map stores widgets instead of strings
+    required Map<String, Widget> items,
   }) {
     return ExpansionTile(
       title: Text(title, style: TextStyle(fontSize: 1.3.t)),
@@ -207,7 +259,7 @@ class CustomMenuBar extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => items[item]!, // Navigate to the widget
+                  builder: (context) => items[item]!,
                 ),
               );
             }
