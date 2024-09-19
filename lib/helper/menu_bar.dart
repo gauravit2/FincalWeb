@@ -1,6 +1,12 @@
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:fincalweb_project/view/Calculators/KVP_calculator.dart';
+import 'package:fincalweb_project/view/Calculators/MF_calculator.dart';
+import 'package:fincalweb_project/view/Calculators/NSC_calculator.dart';
+import 'package:fincalweb_project/view/Calculators/PPF_calculator.dart';
 import 'package:fincalweb_project/view/Calculators/RD_calculator.dart';
+import 'package:fincalweb_project/view/Calculators/SCSS_calculator.dart';
+import 'package:fincalweb_project/view/Calculators/SIP_calculator.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:fincalweb_project/helper/size_config.dart';
@@ -61,36 +67,18 @@ class CustomMenuBar extends StatelessWidget {
                       customDropDown(
                         title: 'Post Calculators',
                         items: {
-                          'PPF Calculator': AllCalculators(
-                              title: 'PPF Calculator',
-                              content: 'PPF Calculator Content'
-                          ),
-                          'NSC Calculator': AllCalculators(
-                              title: 'NSC Calculator',
-                              content: 'NSC Calculator Content'
-                          ),
-                          'KVP Calculator': AllCalculators(
-                              title: 'KVP Calculator',
-                              content: 'KVP Calculator Content'
-                          ),
-                          'SCSS Calculator': AllCalculators(
-                              title: 'SCSS Calculator',
-                              content: 'SCSS Calculator Content'
-                          ),
+                          'PPF Calculator': PpfCalculator(),
+                          'NSC Calculator': NscCalculator(),
+                          'KVP Calculator': KvpCalculator(),
+                          'SCSS Calculator': ScssCalculator(),
                         },
                         context: context,
                       ),
                       customDropDown(
                         title: 'Market Calculators',
                         items: {
-                          'SIP Calculator': AllCalculators(
-                              title: 'SIP Calculator',
-                              content: 'SIP Calculator Content'
-                          ),
-                          'MF Calculator': AllCalculators(
-                              title: 'MF Calculator',
-                              content: 'MF Calculator Content'
-                          ),
+                          'SIP Calculator': SipCalculator(),
+                          'MF Calculator': MfCalculator(),
                         },
                         context: context,
                       ),
@@ -171,36 +159,18 @@ class CustomMenuBar extends StatelessWidget {
             context: context,
             title: 'Post Calculators',
             items: {
-              'PPF Calculator': AllCalculators(
-                  title: 'PPF Calculator',
-                  content: 'PPF Calculator Content'
-              ),
-              'NSC Calculator': AllCalculators(
-                  title: 'NSC Calculator',
-                  content: 'NSC Calculator Content'
-              ),
-              'KVP Calculator': AllCalculators(
-                  title: 'KVP Calculator',
-                  content: 'KVP Calculator Content'
-              ),
-              'SCSS Calculator': AllCalculators(
-                  title: 'SCSS Calculator',
-                  content: 'SCSS Calculator Content'
-              ),
+              'PPF Calculator': PpfCalculator(),
+              'NSC Calculator': NscCalculator(),
+              'KVP Calculator':KvpCalculator(),
+              'SCSS Calculator': ScssCalculator(),
             },
           ),
           _buildDrawerItem(
             context: context,
             title: 'Market Calculators',
             items: {
-              'SIP Calculator': AllCalculators(
-                  title: 'SIP Calculator',
-                  content: 'SIP Calculator Content'
-              ),
-              'MF Calculator': AllCalculators(
-                  title: 'MF Calculator',
-                  content: 'MF Calculator Content'
-              ),
+              'SIP Calculator': SipCalculator(),
+              'MF Calculator': MfCalculator()
             },
           ),
           ListTile(

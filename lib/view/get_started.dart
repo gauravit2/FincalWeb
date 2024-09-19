@@ -80,6 +80,26 @@ class AllCalculators extends StatelessWidget {
                       if (cardData[index]['title'] == 'RD Calculator') {
                         Navigator.pushNamed(context, '/RD_calculator');
                       }
+                      if (cardData[index]['title'] == 'SIP Calculator') {
+                        Navigator.pushNamed(context, '/SIP_calculator');
+                      }
+                      if (cardData[index]['title'] == 'MF Calculator') {
+                        Navigator.pushNamed(context, '/MF_calculator');
+                      }
+                      if (cardData[index]['title'] == 'PPF Calculator') {
+                        Navigator.pushNamed(context, '/PPF_calculator');
+                      }
+                      if (cardData[index]['title'] == 'NSC Calculator') {
+                        Navigator.pushNamed(context, '/NSC_calculator');
+                      }
+                      if (cardData[index]['title'] == 'KVP Calculator') {
+                        Navigator.pushNamed(context, '/KVP_calculator');
+                      }
+                      if (cardData[index]['title'] == 'SCSS Calculator') {
+                        Navigator.pushNamed(context, '/SCSS_calculator');
+                      }
+
+
                       else {
                         // Handle other calculator navigation or display a message
                         // Navigator.pushNamed(context, '/other-calculator');

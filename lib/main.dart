@@ -1,5 +1,11 @@
 import 'package:fincalweb_project/view/Calculators/FD_calculator.dart';
+import 'package:fincalweb_project/view/Calculators/KVP_calculator.dart';
+import 'package:fincalweb_project/view/Calculators/MF_calculator.dart';
+import 'package:fincalweb_project/view/Calculators/NSC_calculator.dart';
+import 'package:fincalweb_project/view/Calculators/PPF_calculator.dart';
 import 'package:fincalweb_project/view/Calculators/RD_calculator.dart';
+import 'package:fincalweb_project/view/Calculators/SCSS_calculator.dart';
+import 'package:fincalweb_project/view/Calculators/SIP_calculator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'helper/get_di.dart' as di;
@@ -36,7 +42,13 @@ class MyApp extends StatelessWidget {
                   '/': (context) => HomePage(),
                   '/get_started': (context) => AllCalculators(title: '', content: '',),
                   '/FD_calculator':(context) => FdCalculator(),
-                  '/RD_calculator':(context) => RdCalculator()
+                  '/RD_calculator':(context) => RdCalculator(),
+                  '/SIP_calculator':(context) => SipCalculator(),
+                  '/MF_calculator':(context) => MfCalculator(),
+                  '/PPF_calculator':(context) => PpfCalculator(),
+                  '/NSC_calculator':(context) =>NscCalculator(),
+                  '/KVP_calculator':(context) =>KvpCalculator(),
+                  '/SCSS_calculator':(context) =>ScssCalculator(),
                 },
                 debugShowCheckedModeBanner: false,
               );

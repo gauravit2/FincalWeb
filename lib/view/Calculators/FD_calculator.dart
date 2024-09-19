@@ -104,7 +104,7 @@ class _FdCalculatorState extends State<FdCalculator> {
                     children: [
                       _buildInputField(
                         controller: _principalController,
-                        label: "Principal Amount (₹)",
+                        label: "Investment Amt (₹)",
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter the amount';
@@ -123,7 +123,7 @@ class _FdCalculatorState extends State<FdCalculator> {
                       ),
                       _buildInputField(
                         controller: _interestRateController,
-                        label: "Annual Interest Rate (%)",
+                        label: "Interest Rate(%)",
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter the interest rate';
@@ -142,14 +142,14 @@ class _FdCalculatorState extends State<FdCalculator> {
                       ),
                       _buildInputField(
                         controller: _durationController,
-                        label: "Duration (Years)",
+                        label: "Time Period(Years)",
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter the duration';
+                            return 'Please enter the tenure';
                           }
                           int? years = int.tryParse(value);
                           if (years == null || years < 1 || years > 25) {
-                            return 'Duration must be between 1 and 25 years';
+                            return 'Tenure must be between 1 and 25 years';
                           }
                           return null;
                         },
@@ -163,6 +163,7 @@ class _FdCalculatorState extends State<FdCalculator> {
                   ),
                 ),
               ),
+
               Center(
                 child: ElevatedButton(
                   onPressed: () {
@@ -212,18 +213,24 @@ class _FdCalculatorState extends State<FdCalculator> {
                               sections: [
                                 PieChartSectionData(
                                   color: Colors.green,
-                                 // value: principalAmount,
+                                  value: principalAmount,
+                                  title: principalAmount.toStringAsFixed(2),
                                   radius: 35,
+                                  titleStyle: TextStyle(fontSize: 12,  color: Colors.black),
                                 ),
                                 PieChartSectionData(
                                   color: Colors.orangeAccent,
-                                  //value: totalInterestEarned,
+                                  value: totalInterestEarned,
+                                  title: totalInterestEarned.toStringAsFixed(2),
                                   radius: 35,
+                                  titleStyle: TextStyle(fontSize: 12,  color: Colors.black),
                                 ),
                                 PieChartSectionData(
                                   color: Colors.blueAccent,
-                                 // value: maturityValue,
+                                  value: maturityValue,
+                                  title: maturityValue.toStringAsFixed(2),
                                   radius: 35,
+                                  titleStyle: TextStyle(fontSize: 12,  color: Colors.black),
                                 ),
                               ],
                             ),
@@ -305,7 +312,7 @@ class _FdCalculatorState extends State<FdCalculator> {
           ),
           SizedBox(width: 2.w),
           Text(
-            "$label: ₹${value.toStringAsFixed(2)}",
+            "$label: ₹ ${value.toStringAsFixed(2)}",
             style: TextStyle(fontSize: 1.5.t, color: Colors.black),
           ),
         ],

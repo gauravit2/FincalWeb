@@ -1,31 +1,29 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fincalweb_project/helper/menu_bar.dart';
 import 'package:fincalweb_project/helper/size_config.dart';
 import 'package:fincalweb_project/helper/breadcrumb_navBar.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-class RdCalculator extends StatefulWidget {
-  const RdCalculator({super.key});
+class KvpCalculator extends StatefulWidget {
+  const KvpCalculator({super.key});
 
   @override
-  _RdCalculatorState createState() => _RdCalculatorState();
+  _KvpCalculatorState createState() => _KvpCalculatorState();
 }
 
-class _RdCalculatorState extends State<RdCalculator> {
+class _KvpCalculatorState extends State<KvpCalculator> {
   final _formKey = GlobalKey<FormState>();
 
   // Controllers to hold initial values in text fields
-  late TextEditingController _principalController;
+  late TextEditingController _amountController;
   late TextEditingController _interestRateController;
   late TextEditingController _durationController;
 
-  double investedAmount = 500.0; // Default investment amount
-  double annualInterestRate = 6.5; // Default interest rate
-  int tenureInYears = 1; // Default tenure
-
+  double investedAmount = 1000.0; // Default investment amount
   double maturityValue = 0.0;
   double totalInterestEarned = 0.0;
+  double annualInterestRate = 7.5; // Default interest rate
+  int tenureInYears = 9;
   bool showResult = false; // Flag to control the display of the result section
 
   @override
@@ -33,35 +31,25 @@ class _RdCalculatorState extends State<RdCalculator> {
     super.initState();
 
     // Initializing controllers with default values
-    _principalController = TextEditingController(text: investedAmount.toString());
+    _amountController = TextEditingController(text: investedAmount.toString());
     _interestRateController = TextEditingController(text: annualInterestRate.toString());
     _durationController = TextEditingController(text: tenureInYears.toString());
 
-    // Automatically calculate the RD when the app starts
-    calculateRD();
+    // Automatically calculate the KVP when the app starts
+    calculateKVP();
     showResult = true; // Show the result initially
   }
 
-  // RD Calculation using Compound Interest formula
-  void calculateRD() {
-    double roi = annualInterestRate / 100; // Convert percentage to decimal
-    int totalMonth = tenureInYears * 12;
-    int compoundRate = 3; // Compounded quarterly
+  void calculateKVP() {
+    // Calculate the maturity amount (KVP doubles the investment)
+    double maturityAmount = investedAmount * 2;
 
-    double compoundCount = totalMonth / compoundRate;
-    double maturityAmount = 0.0;
-
-    for (int index = 1; index <= totalMonth; index++) {
-      double input = 1 + roi / compoundCount;
-      maturityAmount += investedAmount * pow(input, compoundCount * (index / totalMonth));
-    }
-
-    maturityAmount *= 1 + roi;
-    double totalInvestmentAmount = investedAmount * totalMonth;
-    totalInterestEarned = maturityAmount - totalInvestmentAmount;
+    // Calculate total interest earned
+    double totalInterestEarned = maturityAmount - investedAmount;
 
     setState(() {
       this.maturityValue = maturityAmount;
+      this.totalInterestEarned = totalInterestEarned;
     });
   }
 
@@ -82,9 +70,9 @@ class _RdCalculatorState extends State<RdCalculator> {
             padding: EdgeInsets.all(2.w),
             children: [
               BreadcrumbNavBar(
-                breadcrumbItems: ['Home', 'Calculators', 'RD Calculator'],
-                routes: ['/', '/get_started', '/RD_calculator'],
-                currentRoute: ModalRoute.of(context)?.settings.name ?? 'RD Calculator',
+                breadcrumbItems: ['Home', 'Calculators', 'KVP Calculator'],
+                routes: ['/', '/get_started', '/KVP_calculator'],
+                currentRoute: ModalRoute.of(context)?.settings.name ?? 'KVP Calculator',
               ),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 2.w),
@@ -92,7 +80,7 @@ class _RdCalculatorState extends State<RdCalculator> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      "RD Calculator",
+                      "KVP Calculator",
                       style: TextStyle(
                           fontSize: 2.5.t,
                           fontWeight: FontWeight.bold,
@@ -100,14 +88,13 @@ class _RdCalculatorState extends State<RdCalculator> {
                     ),
                     SizedBox(height: 2.w),
                     Text(
-                      "An Recurring deposit (RD) calculator eliminates the hassle of computing its returns manually and enables an investor to know the exact amount their deposits will accrue after the relevant period. Recurring deposits are an investment instrument almost similar to fixed deposits.",
+                      "This is Kisan Vikas Patra (KVP) calculator used to plan long term investment plan. The primary purpose of KVP scheme was to introduce long-termfinancial planning concepts to the public",
                       textAlign: TextAlign.start,
                       style: TextStyle(fontSize: 1.5.t, color: Colors.black87),
                     ),
                   ],
                 ),
               ),
-
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 6.w),
                 child: Form(
@@ -116,15 +103,15 @@ class _RdCalculatorState extends State<RdCalculator> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       _buildInputField(
-                        controller: _principalController,
-                        label: "Monthly Investment (₹)",
+                        controller: _amountController,
+                        label: "Investment Amount (₹)",
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter the amount';
                           }
                           double? amount = double.tryParse(value);
-                          if (amount == null || amount < 500) {
-                            return 'Minimum amount is ₹500';
+                          if (amount == null || amount < 1000 || amount > 1000000) {
+                            return 'Amount should be between ₹1000 and ₹10,00,000';
                           }
                           return null;
                         },
@@ -136,7 +123,7 @@ class _RdCalculatorState extends State<RdCalculator> {
                       ),
                       _buildInputField(
                         controller: _interestRateController,
-                        label: "Interest Rate (%)",
+                        label: "Interest Rate(%)",
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter the interest rate';
@@ -161,8 +148,8 @@ class _RdCalculatorState extends State<RdCalculator> {
                             return 'Please enter the tenure';
                           }
                           int? years = int.tryParse(value);
-                          if (years == null || years < 1) {
-                            return 'Tenure must be at least 1 year';
+                          if (years == null || years < 1 || years > 25) {
+                            return 'Tenure must be between 1 and 25 years';
                           }
                           return null;
                         },
@@ -176,12 +163,13 @@ class _RdCalculatorState extends State<RdCalculator> {
                   ),
                 ),
               ),
+
               Center(
                 child: ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState?.validate() ?? false) {
                       setState(() {
-                        calculateRD(); // Final calculation when user clicks Calculate
+                        calculateKVP(); // Final calculation when user clicks Calculate
                         showResult = true; // Show result after calculation
                       });
                     }
@@ -193,12 +181,11 @@ class _RdCalculatorState extends State<RdCalculator> {
                   ),
                   child: Text(
                     'Calculate',
-                    style: TextStyle(fontSize: 1.5.t,
-                        color: Colors.white),
+                    style: TextStyle(fontSize: 1.5.t, color: Colors.white),
                   ),
                 ),
               ),
-              SizedBox(height: 2.h, ),
+              SizedBox(height: 2.h),
               if (showResult) // Only display when the flag is true
                 Column(
                   children: [
@@ -225,24 +212,24 @@ class _RdCalculatorState extends State<RdCalculator> {
                               sections: [
                                 PieChartSectionData(
                                   color: Colors.green,
-                                  value: investedAmount * tenureInYears * 12,
-                                  title: (investedAmount * tenureInYears * 12).toStringAsFixed(2),
+                                  value: investedAmount,
+                                  title: investedAmount.toStringAsFixed(2),
                                   radius: 35,
-                                  titleStyle: TextStyle(fontSize: 12,  color: Colors.black),
+                                  titleStyle: TextStyle(fontSize: 12, color: Colors.black),
                                 ),
                                 PieChartSectionData(
                                   color: Colors.orangeAccent,
-                                 value: totalInterestEarned,
+                                  value: totalInterestEarned,
                                   title: totalInterestEarned.toStringAsFixed(2),
                                   radius: 35,
-                                  titleStyle: TextStyle(fontSize: 12,  color: Colors.black),
+                                  titleStyle: TextStyle(fontSize: 12, color: Colors.black),
                                 ),
                                 PieChartSectionData(
                                   color: Colors.blueAccent,
                                   value: maturityValue,
                                   title: maturityValue.toStringAsFixed(2),
                                   radius: 35,
-                                  titleStyle: TextStyle(fontSize: 12,  color: Colors.black),
+                                  titleStyle: TextStyle(fontSize: 12, color: Colors.black),
                                 ),
                               ],
                             ),
@@ -250,7 +237,7 @@ class _RdCalculatorState extends State<RdCalculator> {
                         ),
                         Column(
                           children: [
-                            _buildInvestmentDetail("Investment Amount", investedAmount * tenureInYears * 12),
+                            _buildInvestmentDetail("Investment Amount", investedAmount),
                             _buildInvestmentDetail("Interest Amount", totalInterestEarned),
                             _buildInvestmentDetail("Maturity Amount", maturityValue),
                           ],
@@ -264,12 +251,10 @@ class _RdCalculatorState extends State<RdCalculator> {
                       decoration: BoxDecoration(
                         color: Colors.blue.shade100,
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.teal.shade800),
                       ),
                       child: Center(
                         child: Text(
-                          "Ad",
-                          style: TextStyle(fontSize: 2.t, color: Colors.teal.shade700),
+                          "AD",
                         ),
                       ),
                     ),
@@ -282,31 +267,27 @@ class _RdCalculatorState extends State<RdCalculator> {
     );
   }
 
-  // Input Field Widget
   Widget _buildInputField({
     required TextEditingController controller,
     required String label,
-    required String? Function(String?) validator,
-    required Function(String) onChanged,
+    required FormFieldValidator<String> validator,
+    required ValueChanged<String> onChanged,
   }) {
     return Container(
-      width: 20.w,
+      width: 28.w,
       child: TextFormField(
         controller: controller,
-        validator: validator,
-        onChanged: onChanged,
-        keyboardType: TextInputType.number,
         decoration: InputDecoration(
           labelText: label,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          border: OutlineInputBorder(),
         ),
+        keyboardType: TextInputType.number,
+        validator: validator,
+        onChanged: onChanged,
       ),
     );
   }
 
-  // Investment detail text widget
   Widget _buildInvestmentDetail(String label, double value) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 2.w),
@@ -318,13 +299,13 @@ class _RdCalculatorState extends State<RdCalculator> {
             color: label == "Investment Amount"
                 ? Colors.green
                 : label == "Interest Amount"
-                ? Colors.orange
-                : Colors.blue,  // Maturity Amount will be in blue
+                ? Colors.orangeAccent
+                : Colors.blueAccent,
           ),
-          SizedBox(width: 2.w),
+          SizedBox(width: 1.w),
           Text(
-            "$label: ₹ ${value.toStringAsFixed(2)}",
-            style: TextStyle(fontSize: 1.5.t, color: Colors.black),
+            "$label:  ₹ ${value.toStringAsFixed(2)}",
+            style: TextStyle(fontSize: 1.6.t),
           ),
         ],
       ),
