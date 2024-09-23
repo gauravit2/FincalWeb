@@ -5,14 +5,16 @@ import 'package:fincalweb_project/helper/size_config.dart';
 import 'package:fincalweb_project/helper/breadcrumb_navBar.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-class MfCalculator extends StatefulWidget {
-  const MfCalculator({super.key});
+import '../../helper/Calculate_button.dart';
+
+class SipCalculator extends StatefulWidget {
+  const SipCalculator({super.key});
 
   @override
-  _MfCalculatorState createState() => _MfCalculatorState();
+  _SipCalculatorState createState() => _SipCalculatorState();
 }
 
-class _MfCalculatorState extends State<MfCalculator> {
+class _SipCalculatorState extends State<SipCalculator> {
   final _formKey = GlobalKey<FormState>();
 
   // Controllers to hold initial values in text fields
@@ -37,26 +39,19 @@ class _MfCalculatorState extends State<MfCalculator> {
     _interestRateController = TextEditingController(text: annualInterestRate.toString());
     _durationController = TextEditingController(text: tenureInYears.toString());
 
-    // Automatically calculate the MF when the app starts
-    calculateMF();
+    // Automatically calculate the SIP when the app starts
+    calculateSIP();
     showResult = true; // Show the result initially
   }
 
-  // MF Calculation using the provided formula
-  void calculateMF() {
-    // Calculate the annual rate of interest
-    double roi = annualInterestRate / 100; // Rate of interest per year
+  // SIP Calculation using formula
+  void calculateSIP() {
+    double roi = annualInterestRate / 100 / 12; // Monthly rate of interest
+    int tenureMonths = tenureInYears * 12;
+    double power = pow(1 + roi, tenureMonths).toDouble(); // Casting num to double
 
-    // Calculate the compound factor
-    double power = pow(1 + roi, tenureInYears).toDouble(); // Casting num to double
-
-    // Calculate the maturity amount
-    double maturityAmount = investedAmount * power;
-
-    // Total investment amount is the initial investment (one-time investment)
-    double totalInvestmentAmount = investedAmount;
-
-    // Total interest earned
+    double maturityAmount = investedAmount * ((power - 1) / roi) * (1 + roi);
+    double totalInvestmentAmount = investedAmount * tenureMonths;
     double totalInterestEarned = maturityAmount - totalInvestmentAmount;
 
     setState(() {
@@ -64,6 +59,7 @@ class _MfCalculatorState extends State<MfCalculator> {
       this.totalInterestEarned = totalInterestEarned;
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -82,9 +78,9 @@ class _MfCalculatorState extends State<MfCalculator> {
             padding: EdgeInsets.all(2.w),
             children: [
               BreadcrumbNavBar(
-                breadcrumbItems: ['Home', 'Calculators', 'MF Calculator'],
-                routes: ['/', '/get_started', '/MF_calculator'],
-                currentRoute: ModalRoute.of(context)?.settings.name ?? 'MF Calculator',
+                breadcrumbItems: ['Home', 'Calculators', 'SIP Calculator'],
+                routes: ['/', '/get_started', '/SIP_calculator'],
+                currentRoute: ModalRoute.of(context)?.settings.name ?? 'SIP Calculator',
               ),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 2.w),
@@ -92,7 +88,7 @@ class _MfCalculatorState extends State<MfCalculator> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      "MF Calculator",
+                      "SIP Calculator",
                       style: TextStyle(
                           fontSize: 2.5.t,
                           fontWeight: FontWeight.bold,
@@ -100,7 +96,7 @@ class _MfCalculatorState extends State<MfCalculator> {
                     ),
                     SizedBox(height: 2.w),
                     Text(
-                      "A Mutual Fund (MF) calculator is a practical financial tool that enables an investor to calculate the returns yielded by investing in mutual funds.",
+                      "A systematic investment plan (SIP) calculator is a simple tool that allows individuals to get an idea of the returns on their mutual fund investments made through SIP. SIP investments in mutual funds have become one of the most popular investment options nowadays.",
                       textAlign: TextAlign.start,
                       style: TextStyle(fontSize: 1.5.t, color: Colors.black87),
                     ),
@@ -116,7 +112,7 @@ class _MfCalculatorState extends State<MfCalculator> {
                     children: [
                       _buildInputField(
                         controller: _amountController,
-                        label: "Investment Amt (₹)",
+                        label: "Monthly Investment (₹)",
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter the amount';
@@ -130,6 +126,26 @@ class _MfCalculatorState extends State<MfCalculator> {
                         onChanged: (value) {
                           setState(() {
                             investedAmount = double.tryParse(value) ?? 0;
+                          });
+                        },
+                      ),
+
+                      _buildInputField(
+                        controller: _durationController,
+                        label: "Time Period(Years)",
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter the tenure';
+                          }
+                          int? years = int.tryParse(value);
+                          if (years == null || years < 1) {
+                            return 'Tenure must be at least 1 year';
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          setState(() {
+                            tenureInYears = int.tryParse(value) ?? 0;
                           });
                         },
                       ),
@@ -152,55 +168,25 @@ class _MfCalculatorState extends State<MfCalculator> {
                           });
                         },
                       ),
-                      _buildInputField(
-                        controller: _durationController,
-                        label: "Time Period(Years)",
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter the tenure';
-                          }
-                          int? years = int.tryParse(value);
-                          if (years == null || years < 1) {
-                            return 'Tenure must be at least 1 year';
-                          }
-                          return null;
-                        },
-                        onChanged: (value) {
-                          setState(() {
-                            tenureInYears = int.tryParse(value) ?? 0;
-                          });
-                        },
-                      ),
                     ],
                   ),
                 ),
               ),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState?.validate() ?? false) {
-                      setState(() {
-                        calculateMF(); // Final calculation when user clicks Calculate
-                        showResult = true; // Show result after calculation
-                      });
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal.shade700,
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 4.w, vertical: 2.w),
-                  ),
-                  child: Text(
-                    'Calculate',
-                    style: TextStyle(fontSize: 1.5.t, color: Colors.white),
-                  ),
-                ),
+              CalculateButton(
+                onPressed: () {
+                  if (_formKey.currentState?.validate() ?? false) {
+                    setState(() {
+                      calculateSIP();
+                      showResult = true;
+                    });
+                  }
+                },
               ),
               SizedBox(height: 2.h),
               if (showResult) // Only display when the flag is true
                 Column(
                   children: [
-                    Divider(thickness: 2, color: Colors.teal),
+                    Divider(thickness: 2, color: Colors.teal.shade200),
                     Padding(
                       padding: EdgeInsets.symmetric(vertical: 6.w),
                       child: Text(
@@ -223,10 +209,10 @@ class _MfCalculatorState extends State<MfCalculator> {
                               sections: [
                                 PieChartSectionData(
                                   color: Colors.green,
-                                  value: investedAmount,
-                                  title: investedAmount.toStringAsFixed(2),
+                                  value: investedAmount * tenureInYears * 12,
+                                  title: (investedAmount * tenureInYears * 12).toStringAsFixed(2),
                                   radius: 35,
-                                  titleStyle: TextStyle(fontSize: 12, color: Colors.black),
+                                  titleStyle: TextStyle(fontSize: 12,  color: Colors.black),
                                 ),
                                 PieChartSectionData(
                                   color: Colors.orangeAccent,
@@ -246,9 +232,10 @@ class _MfCalculatorState extends State<MfCalculator> {
                             ),
                           ),
                         ),
+
                         Column(
                           children: [
-                            _buildInvestmentDetail("Investment Amount", investedAmount),
+                            _buildInvestmentDetail("Investment Amount", investedAmount * tenureInYears * 12),
                             _buildInvestmentDetail("Interest Amount", totalInterestEarned),
                             _buildInvestmentDetail("Maturity Amount", maturityValue),
                           ],
@@ -279,6 +266,7 @@ class _MfCalculatorState extends State<MfCalculator> {
       ),
     );
   }
+
 
   // Input Field Widget
   Widget _buildInputField({
@@ -312,17 +300,17 @@ class _MfCalculatorState extends State<MfCalculator> {
         children: [
           Icon(
             Icons.square,
-            size : 30,
+            size: 30,
             color: label == "Investment Amount"
                 ? Colors.green
                 : label == "Interest Amount"
-                ? Colors.orangeAccent
-                : Colors.blueAccent,
+                ? Colors.orange
+                : Colors.blue,  // Maturity Amount will be in blue
           ),
-          SizedBox(width: 1.w),
+          SizedBox(width: 2.w),
           Text(
             "$label:  ₹ ${value.toStringAsFixed(2)}",
-            style: TextStyle(fontSize: 1.6.t),
+            style: TextStyle(fontSize: 1.5.t, color: Colors.black),
           ),
         ],
       ),

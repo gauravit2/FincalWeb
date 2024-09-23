@@ -20,23 +20,24 @@ class BreadcrumbNavBar extends StatelessWidget {
           // Check if the current route matches the breadcrumb route
           final bool isCurrentPage = routes[index] == currentRoute;
 
-          // Debugging to ensure correct route matching
-          print('Current Route: $currentRoute');
-          print('Breadcrumb Route: ${routes[index]}');
-          print('Is Current Page: $isCurrentPage');
-
           return Row(
             children: [
-              GestureDetector(
-                onTap: isCurrentPage ? null : () {
-                  Navigator.pushNamed(context, routes[index]);
-                },
-                child: Text(
-                  breadcrumbItems[index],
-                  style: TextStyle(
-                    color: isCurrentPage ? Colors.grey : Colors.teal,
-                    fontSize: 16,
-                    decoration: isCurrentPage ? TextDecoration.none : TextDecoration.underline, // Add underline only for non-current page
+              // Wrap the GestureDetector with MouseRegion to change the cursor
+              MouseRegion(
+                cursor: isCurrentPage ? SystemMouseCursors.basic : SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: isCurrentPage
+                      ? null
+                      : () {
+                    Navigator.pushNamed(context, routes[index]);
+                  },
+                  child: Text(
+                    breadcrumbItems[index],
+                    style: TextStyle(
+                      color: isCurrentPage ? Colors.grey : Colors.teal,
+                      fontSize: 12,
+                      // decoration: isCurrentPage ? TextDecoration.none : TextDecoration.underline,
+                    ),
                   ),
                 ),
               ),

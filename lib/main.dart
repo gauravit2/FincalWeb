@@ -1,17 +1,17 @@
-import 'package:fincalweb_project/view/Calculators/FD_calculator.dart';
-import 'package:fincalweb_project/view/Calculators/KVP_calculator.dart';
-import 'package:fincalweb_project/view/Calculators/MF_calculator.dart';
-import 'package:fincalweb_project/view/Calculators/NSC_calculator.dart';
-import 'package:fincalweb_project/view/Calculators/PPF_calculator.dart';
-import 'package:fincalweb_project/view/Calculators/RD_calculator.dart';
-import 'package:fincalweb_project/view/Calculators/SCSS_calculator.dart';
-import 'package:fincalweb_project/view/Calculators/SIP_calculator.dart';
+import 'package:fincalweb_project/view/Calculators/fd-calculator.dart';
+import 'package:fincalweb_project/view/Calculators/kvp-calculator.dart';
+import 'package:fincalweb_project/view/Calculators/mf-calculator.dart';
+import 'package:fincalweb_project/view/Calculators/nsc-calculator.dart';
+import 'package:fincalweb_project/view/Calculators/ppf-calculator.dart';
+import 'package:fincalweb_project/view/Calculators/rd-calculator.dart';
+import 'package:fincalweb_project/view/Calculators/scss-calculator.dart';
+import 'package:fincalweb_project/view/Calculators/sip-calculator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'helper/get_di.dart' as di;
 import 'helper/size_config.dart';
 import 'package:fincalweb_project/view/HomePage.dart';
-import 'package:fincalweb_project/view//get_started.dart';
+import 'package:fincalweb_project/view//get-started.dart';
 
 
 
@@ -40,15 +40,15 @@ class MyApp extends StatelessWidget {
                 initialRoute: '/',
                 routes: {
                   '/': (context) => HomePage(),
-                  '/get_started': (context) => AllCalculators(title: '', content: '',),
-                  '/FD_calculator':(context) => FdCalculator(),
-                  '/RD_calculator':(context) => RdCalculator(),
-                  '/SIP_calculator':(context) => SipCalculator(),
-                  '/MF_calculator':(context) => MfCalculator(),
-                  '/PPF_calculator':(context) => PpfCalculator(),
-                  '/NSC_calculator':(context) =>NscCalculator(),
-                  '/KVP_calculator':(context) =>KvpCalculator(),
-                  '/SCSS_calculator':(context) =>ScssCalculator(),
+                  '/get-started': (context) => AllCalculators(title: '', content: '',),
+                  '/fd-calculator':(context) => FdCalculator(),
+                  '/rd-calculator':(context) => RdCalculator(),
+                  '/sip-calculator':(context) => SipCalculator(),
+                  '/mf-calculator':(context) => MfCalculator(),
+                  '/ppf-calculator':(context) => PpfCalculator(),
+                  '/nsc-calculator':(context) =>NscCalculator(),
+                  '/kvp-calculator':(context) =>KvpCalculator(),
+                  '/scss-calculator':(context) =>ScssCalculator(),
                 },
                 debugShowCheckedModeBanner: false,
               );

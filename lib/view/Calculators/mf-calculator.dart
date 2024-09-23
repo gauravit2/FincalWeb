@@ -1,17 +1,20 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fincalweb_project/helper/menu_bar.dart';
 import 'package:fincalweb_project/helper/size_config.dart';
 import 'package:fincalweb_project/helper/breadcrumb_navBar.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-class KvpCalculator extends StatefulWidget {
-  const KvpCalculator({super.key});
+import '../../helper/Calculate_button.dart';
+
+class MfCalculator extends StatefulWidget {
+  const MfCalculator({super.key});
 
   @override
-  _KvpCalculatorState createState() => _KvpCalculatorState();
+  _MfCalculatorState createState() => _MfCalculatorState();
 }
 
-class _KvpCalculatorState extends State<KvpCalculator> {
+class _MfCalculatorState extends State<MfCalculator> {
   final _formKey = GlobalKey<FormState>();
 
   // Controllers to hold initial values in text fields
@@ -19,11 +22,12 @@ class _KvpCalculatorState extends State<KvpCalculator> {
   late TextEditingController _interestRateController;
   late TextEditingController _durationController;
 
-  double investedAmount = 1000.0; // Default investment amount
+  double investedAmount = 500.0; // Default investment amount
+  double annualInterestRate = 12.0; // Default interest rate
+  int tenureInYears = 1; // Default tenure
+
   double maturityValue = 0.0;
   double totalInterestEarned = 0.0;
-  double annualInterestRate = 7.5; // Default interest rate
-  int tenureInYears = 9;
   bool showResult = false; // Flag to control the display of the result section
 
   @override
@@ -35,17 +39,27 @@ class _KvpCalculatorState extends State<KvpCalculator> {
     _interestRateController = TextEditingController(text: annualInterestRate.toString());
     _durationController = TextEditingController(text: tenureInYears.toString());
 
-    // Automatically calculate the KVP when the app starts
-    calculateKVP();
+    // Automatically calculate the MF when the app starts
+    calculateMF();
     showResult = true; // Show the result initially
   }
 
-  void calculateKVP() {
-    // Calculate the maturity amount (KVP doubles the investment)
-    double maturityAmount = investedAmount * 2;
+  // MF Calculation using the provided formula
+  void calculateMF() {
+    // Calculate the annual rate of interest
+    double roi = annualInterestRate / 100; // Rate of interest per year
 
-    // Calculate total interest earned
-    double totalInterestEarned = maturityAmount - investedAmount;
+    // Calculate the compound factor
+    double power = pow(1 + roi, tenureInYears).toDouble(); // Casting num to double
+
+    // Calculate the maturity amount
+    double maturityAmount = investedAmount * power;
+
+    // Total investment amount is the initial investment (one-time investment)
+    double totalInvestmentAmount = investedAmount;
+
+    // Total interest earned
+    double totalInterestEarned = maturityAmount - totalInvestmentAmount;
 
     setState(() {
       this.maturityValue = maturityAmount;
@@ -70,9 +84,9 @@ class _KvpCalculatorState extends State<KvpCalculator> {
             padding: EdgeInsets.all(2.w),
             children: [
               BreadcrumbNavBar(
-                breadcrumbItems: ['Home', 'Calculators', 'KVP Calculator'],
-                routes: ['/', '/get_started', '/KVP_calculator'],
-                currentRoute: ModalRoute.of(context)?.settings.name ?? 'KVP Calculator',
+                breadcrumbItems: ['Home', 'Calculators', 'MF Calculator'],
+                routes: ['/', '/get_started', '/MF_calculator'],
+                currentRoute: ModalRoute.of(context)?.settings.name ?? 'MF Calculator',
               ),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 2.w),
@@ -80,7 +94,7 @@ class _KvpCalculatorState extends State<KvpCalculator> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      "KVP Calculator",
+                      "MF Calculator",
                       style: TextStyle(
                           fontSize: 2.5.t,
                           fontWeight: FontWeight.bold,
@@ -88,7 +102,7 @@ class _KvpCalculatorState extends State<KvpCalculator> {
                     ),
                     SizedBox(height: 2.w),
                     Text(
-                      "This is Kisan Vikas Patra (KVP) calculator used to plan long term investment plan. The primary purpose of KVP scheme was to introduce long-termfinancial planning concepts to the public",
+                      "A Mutual Fund (MF) calculator is a practical financial tool that enables an investor to calculate the returns yielded by investing in mutual funds.",
                       textAlign: TextAlign.start,
                       style: TextStyle(fontSize: 1.5.t, color: Colors.black87),
                     ),
@@ -104,14 +118,14 @@ class _KvpCalculatorState extends State<KvpCalculator> {
                     children: [
                       _buildInputField(
                         controller: _amountController,
-                        label: "Investment Amount (₹)",
+                        label: "Investment Amt (₹)",
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter the amount';
                           }
                           double? amount = double.tryParse(value);
-                          if (amount == null || amount < 1000 || amount > 1000000) {
-                            return 'Amount should be between ₹1000 and ₹10,00,000';
+                          if (amount == null || amount < 500) {
+                            return 'Minimum amount is ₹500';
                           }
                           return null;
                         },
@@ -122,8 +136,27 @@ class _KvpCalculatorState extends State<KvpCalculator> {
                         },
                       ),
                       _buildInputField(
+                        controller: _durationController,
+                        label: "Time Period(Years)",
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter the tenure';
+                          }
+                          int? years = int.tryParse(value);
+                          if (years == null || years < 1) {
+                            return 'Tenure must be at least 1 year';
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          setState(() {
+                            tenureInYears = int.tryParse(value) ?? 0;
+                          });
+                        },
+                      ),
+                      _buildInputField(
                         controller: _interestRateController,
-                        label: "Interest Rate(%)",
+                        label: "Interest Rate (%)",
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter the interest rate';
@@ -140,56 +173,26 @@ class _KvpCalculatorState extends State<KvpCalculator> {
                           });
                         },
                       ),
-                      _buildInputField(
-                        controller: _durationController,
-                        label: "Time Period(Years)",
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter the tenure';
-                          }
-                          int? years = int.tryParse(value);
-                          if (years == null || years < 1 || years > 25) {
-                            return 'Tenure must be between 1 and 25 years';
-                          }
-                          return null;
-                        },
-                        onChanged: (value) {
-                          setState(() {
-                            tenureInYears = int.tryParse(value) ?? 0;
-                          });
-                        },
-                      ),
+
                     ],
                   ),
                 ),
               ),
-
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState?.validate() ?? false) {
-                      setState(() {
-                        calculateKVP(); // Final calculation when user clicks Calculate
-                        showResult = true; // Show result after calculation
-                      });
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal.shade700,
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 4.w, vertical: 2.w),
-                  ),
-                  child: Text(
-                    'Calculate',
-                    style: TextStyle(fontSize: 1.5.t, color: Colors.white),
-                  ),
-                ),
+              CalculateButton(
+                onPressed: () {
+                  if (_formKey.currentState?.validate() ?? false) {
+                    setState(() {
+                      calculateMF();
+                      showResult = true;
+                    });
+                  }
+                },
               ),
               SizedBox(height: 2.h),
               if (showResult) // Only display when the flag is true
                 Column(
                   children: [
-                    Divider(thickness: 2, color: Colors.teal),
+                    Divider(thickness: 2, color: Colors.teal.shade200),
                     Padding(
                       padding: EdgeInsets.symmetric(vertical: 6.w),
                       child: Text(
@@ -251,10 +254,12 @@ class _KvpCalculatorState extends State<KvpCalculator> {
                       decoration: BoxDecoration(
                         color: Colors.blue.shade100,
                         borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.teal.shade800),
                       ),
                       child: Center(
                         child: Text(
-                          "AD",
+                          "Ad",
+                          style: TextStyle(fontSize: 2.t, color: Colors.teal.shade700),
                         ),
                       ),
                     ),
@@ -267,27 +272,31 @@ class _KvpCalculatorState extends State<KvpCalculator> {
     );
   }
 
+  // Input Field Widget
   Widget _buildInputField({
     required TextEditingController controller,
     required String label,
-    required FormFieldValidator<String> validator,
-    required ValueChanged<String> onChanged,
+    required String? Function(String?) validator,
+    required Function(String) onChanged,
   }) {
     return Container(
-      width: 28.w,
+      width: 20.w,
       child: TextFormField(
         controller: controller,
-        decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(),
-        ),
-        keyboardType: TextInputType.number,
         validator: validator,
         onChanged: onChanged,
+        keyboardType: TextInputType.number,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
       ),
     );
   }
 
+  // Investment detail text widget
   Widget _buildInvestmentDetail(String label, double value) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 2.w),
@@ -295,7 +304,7 @@ class _KvpCalculatorState extends State<KvpCalculator> {
         children: [
           Icon(
             Icons.square,
-            size: 30,
+            size : 30,
             color: label == "Investment Amount"
                 ? Colors.green
                 : label == "Interest Amount"

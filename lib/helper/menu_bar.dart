@@ -1,17 +1,18 @@
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:fincalweb_project/view/Calculators/KVP_calculator.dart';
-import 'package:fincalweb_project/view/Calculators/MF_calculator.dart';
-import 'package:fincalweb_project/view/Calculators/NSC_calculator.dart';
-import 'package:fincalweb_project/view/Calculators/PPF_calculator.dart';
-import 'package:fincalweb_project/view/Calculators/RD_calculator.dart';
-import 'package:fincalweb_project/view/Calculators/SCSS_calculator.dart';
-import 'package:fincalweb_project/view/Calculators/SIP_calculator.dart';
+import 'package:fincalweb_project/view/Calculators/kvp-calculator.dart';
+import 'package:fincalweb_project/view/Calculators/mf-calculator.dart';
+import 'package:fincalweb_project/view/Calculators/nsc-calculator.dart';
+import 'package:fincalweb_project/view/Calculators/ppf-calculator.dart';
+import 'package:fincalweb_project/view/Calculators/rd-calculator.dart';
+import 'package:fincalweb_project/view/Calculators/scss-calculator.dart';
+import 'package:fincalweb_project/view/Calculators/sip-calculator.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:fincalweb_project/helper/size_config.dart';
-import 'package:fincalweb_project/view/Calculators/FD_calculator.dart'; // Import FD Calculator
-import 'package:fincalweb_project/view/get_started.dart';
+import 'package:fincalweb_project/view/Calculators/fd-calculator.dart';
+import 'package:fincalweb_project/view/get-started.dart';
+import 'package:fincalweb_project/view/HomePage.dart'; // Import your Home Page
 
 class CustomMenuBar extends StatelessWidget {
   @override
@@ -22,7 +23,7 @@ class CustomMenuBar extends StatelessWidget {
           return Scaffold(
             extendBodyBehindAppBar: true,
             appBar: AppBar(
-              title: _buildAppName(),
+              title: _buildAppName(context),
               backgroundColor: Colors.transparent,
               elevation: 0,
             ),
@@ -41,17 +42,18 @@ class CustomMenuBar extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildAppName(),
+                _buildAppName(context),
                 Expanded(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
+                      Spacer(flex: 1),
                       customDropDown(
                         title: 'Loan Calculators',
                         items: {
                           'EMI Calculator': AllCalculators(
-                              title: 'EMI Calculator',
-                              content: 'EMI Calculator Content'
+                            title: 'EMI Calculator',
+                            content: 'EMI Calculator Content',
                           ),
                         },
                         context: context,
@@ -109,7 +111,7 @@ class CustomMenuBar extends StatelessWidget {
           closedFillColor: Colors.teal.shade800,
           expandedShadow: [BoxShadow(color: Colors.transparent)],
           expandedBorderRadius: BorderRadius.circular(5.0),
-          expandedFillColor: Colors.teal.shade800,
+          expandedFillColor: Colors.teal.shade400,
           closedBorderRadius: BorderRadius.circular(0),
         ),
         hintText: title,
@@ -135,15 +137,15 @@ class CustomMenuBar extends StatelessWidget {
         children: [
           DrawerHeader(
             decoration: BoxDecoration(color: Colors.teal.shade600),
-            child: Center(child: _buildAppName()),
+            child: Center(child: _buildAppName(context)),
           ),
           _buildDrawerItem(
             context: context,
             title: 'Loan Calculators',
             items: {
               'EMI Calculator': AllCalculators(
-                  title: 'EMI Calculator',
-                  content: 'EMI Calculator Content'
+                title: 'EMI Calculator',
+                content: 'EMI Calculator Content',
               ),
             },
           ),
@@ -152,7 +154,7 @@ class CustomMenuBar extends StatelessWidget {
             title: 'Bank Calculators',
             items: {
               'FD Calculator': FdCalculator(),
-              'RD Calculator': RdCalculator()
+              'RD Calculator': RdCalculator(),
             },
           ),
           _buildDrawerItem(
@@ -161,7 +163,7 @@ class CustomMenuBar extends StatelessWidget {
             items: {
               'PPF Calculator': PpfCalculator(),
               'NSC Calculator': NscCalculator(),
-              'KVP Calculator':KvpCalculator(),
+              'KVP Calculator': KvpCalculator(),
               'SCSS Calculator': ScssCalculator(),
             },
           ),
@@ -170,7 +172,7 @@ class CustomMenuBar extends StatelessWidget {
             title: 'Market Calculators',
             items: {
               'SIP Calculator': SipCalculator(),
-              'MF Calculator': MfCalculator()
+              'MF Calculator': MfCalculator(),
             },
           ),
           ListTile(
@@ -187,29 +189,37 @@ class CustomMenuBar extends StatelessWidget {
     );
   }
 
-  Widget _buildAppName() {
-    return Row(
-      children: [
-        ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: 'assets/images/logo1.jpeg',
-            height: 4.t,
-            width: 4.t,
-            fit: BoxFit.fill,
-            placeholder: (context, url) => CircularProgressIndicator(),
-            errorWidget: (context, url, error) => Icon(Icons.error),
+  Widget _buildAppName(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      },
+      child: Row(
+        children: [
+          ClipOval(
+            child: CachedNetworkImage(
+              imageUrl: 'assets/images/logo1.jpeg',
+              height: 4.t,
+              width: 4.t,
+              fit: BoxFit.fill,
+              placeholder: (context, url) => CircularProgressIndicator(),
+              errorWidget: (context, url, error) => Icon(Icons.error),
+            ),
           ),
-        ),
-        SizedBox(width: 2.w),
-        Text(
-          'Fincal',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 2.t,
-            fontWeight: FontWeight.bold,
+          SizedBox(width: 2.w),
+          Text(
+            'Fincal',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 2.t,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

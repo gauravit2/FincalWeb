@@ -4,6 +4,8 @@ import 'package:fincalweb_project/helper/size_config.dart';
 import 'package:fincalweb_project/helper/breadcrumb_navBar.dart';
 import 'package:fl_chart/fl_chart.dart';
 
+import '../../helper/Calculate_button.dart';
+
 class ScssCalculator extends StatefulWidget {
   const ScssCalculator({super.key});
 
@@ -134,25 +136,6 @@ class _ScssCalculatorState extends State<ScssCalculator> {
                         },
                       ),
                       _buildInputField(
-                        controller: _interestRateController,
-                        label: "Interest Rate(%)",
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter the interest rate';
-                          }
-                          double? rate = double.tryParse(value);
-                          if (rate == null || rate < 1) {
-                            return 'Interest rate must be at least 1%';
-                          }
-                          return null;
-                        },
-                        onChanged: (value) {
-                          setState(() {
-                            annualInterestRate = double.tryParse(value) ?? 0;
-                          });
-                        },
-                      ),
-                      _buildInputField(
                         controller: _durationController,
                         label: "Time Period(Years)",
                         validator: (value) {
@@ -171,37 +154,46 @@ class _ScssCalculatorState extends State<ScssCalculator> {
                           });
                         },
                       ),
+                      _buildInputField(
+                        controller: _interestRateController,
+                        label: "Interest Rate(%)",
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter the interest rate';
+                          }
+                          double? rate = double.tryParse(value);
+                          if (rate == null || rate < 1) {
+                            return 'Interest rate must be at least 1%';
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          setState(() {
+                            annualInterestRate = double.tryParse(value) ?? 0;
+                          });
+                        },
+                      ),
+
                     ],
                   ),
                 ),
               ),
 
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState?.validate() ?? false) {
-                      setState(() {
-                        calculateSCSS(); // Final calculation when user clicks Calculate
-                        showResult = true; // Show result after calculation
-                      });
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal.shade700,
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 4.w, vertical: 2.w),
-                  ),
-                  child: Text(
-                    'Calculate',
-                    style: TextStyle(fontSize: 1.5.t, color: Colors.white),
-                  ),
-                ),
+              CalculateButton(
+                onPressed: () {
+                  if (_formKey.currentState?.validate() ?? false) {
+                    setState(() {
+                      calculateSCSS();
+                      showResult = true;
+                    });
+                  }
+                },
               ),
               SizedBox(height: 2.h),
               if (showResult) // Only display when the flag is true
                 Column(
                   children: [
-                    Divider(thickness: 2, color: Colors.teal),
+                    Divider(thickness: 2, color: Colors.teal.shade200),
                     Padding(
                       padding: EdgeInsets.symmetric(vertical: 6.w),
                       child: Text(

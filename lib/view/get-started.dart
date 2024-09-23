@@ -8,9 +8,7 @@ class AllCalculators extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get the screen width
     double screenWidth = MediaQuery.of(context).size.width;
-
 
     int crossAxisCount;
     if (screenWidth >= 1200) {
@@ -18,7 +16,7 @@ class AllCalculators extends StatelessWidget {
     } else if (screenWidth >= 800) {
       crossAxisCount = 2;
     } else {
-      crossAxisCount = 1; // 1 card per row for small screens
+      crossAxisCount = 1;
     }
 
     return Scaffold(
@@ -35,37 +33,32 @@ class AllCalculators extends StatelessWidget {
             physics: const BouncingScrollPhysics(),
             padding: EdgeInsets.all(2.w),
             children: [
-              // Breadcrumb Navigation Bar
               BreadcrumbNavBar(
-                breadcrumbItems: ['Home', 'Calculators'],  // name that display on screen
-                routes: ['/', '/get_started'],   // name of route
-                currentRoute: ModalRoute.of(context)?.settings.name ?? 'Calculators',  //current page
+                breadcrumbItems: ['Home', 'Calculators'],
+                routes: ['/', '/get-started'],
+                currentRoute: ModalRoute.of(context)?.settings.name ?? 'Calculators',
               ),
               const SizedBox(height: 20),
-
-              // Heading below Breadcrumb
               Text(
                 'All Financial Calculators',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 2.t, // Responsive text size
+                  fontSize: 2.t,
                   fontWeight: FontWeight.bold,
                   color: Colors.teal.shade800,
                 ),
               ),
               const SizedBox(height: 20),
-
-              // Responsive Grid of Cards
               GridView.builder(
-                physics: const NeverScrollableScrollPhysics(), // Prevents scrolling inside the grid
+                physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: crossAxisCount, // Dynamically set the number of cards per row
-                  crossAxisSpacing: 16.0, // Increased spacing between cards
-                  mainAxisSpacing: 20.0, // Increased spacing between rows
-                  childAspectRatio: 1, // Square shape for the card
+                  crossAxisCount: crossAxisCount,
+                  crossAxisSpacing: 20.0,
+                  mainAxisSpacing: 30.0,
+                  childAspectRatio: 1,
                 ),
-                itemCount: 9, // 9 cards in total
+                itemCount: 9,
                 itemBuilder: (BuildContext context, int index) {
                   return CalculatorCard(
                     imageUrl: cardData[index]['imageUrl']!,
@@ -73,36 +66,29 @@ class AllCalculators extends StatelessWidget {
                     description: cardData[index]['description']!,
                     buttonText: cardData[index]['buttonText']!,
                     onPressed: () {
-                      // Handle navigation to specific calculator
                       if (cardData[index]['title'] == 'FD Calculator') {
-                        Navigator.pushNamed(context, '/FD_calculator');
+                        Navigator.pushNamed(context, '/fd-calculator');
                       }
                       if (cardData[index]['title'] == 'RD Calculator') {
-                        Navigator.pushNamed(context, '/RD_calculator');
+                        Navigator.pushNamed(context, '/rd-calculator');
                       }
                       if (cardData[index]['title'] == 'SIP Calculator') {
-                        Navigator.pushNamed(context, '/SIP_calculator');
+                        Navigator.pushNamed(context, '/sip-calculator');
                       }
                       if (cardData[index]['title'] == 'MF Calculator') {
-                        Navigator.pushNamed(context, '/MF_calculator');
+                        Navigator.pushNamed(context, '/mf-calculator');
                       }
                       if (cardData[index]['title'] == 'PPF Calculator') {
-                        Navigator.pushNamed(context, '/PPF_calculator');
+                        Navigator.pushNamed(context, '/ppf-calculator');
                       }
                       if (cardData[index]['title'] == 'NSC Calculator') {
-                        Navigator.pushNamed(context, '/NSC_calculator');
+                        Navigator.pushNamed(context, '/nsc-calculator');
                       }
                       if (cardData[index]['title'] == 'KVP Calculator') {
-                        Navigator.pushNamed(context, '/KVP_calculator');
+                        Navigator.pushNamed(context, '/kvp-calculator');
                       }
                       if (cardData[index]['title'] == 'SCSS Calculator') {
-                        Navigator.pushNamed(context, '/SCSS_calculator');
-                      }
-
-
-                      else {
-                        // Handle other calculator navigation or display a message
-                        // Navigator.pushNamed(context, '/other-calculator');
+                        Navigator.pushNamed(context, '/scss-calculator');
                       }
                     },
                   );
@@ -116,7 +102,6 @@ class AllCalculators extends StatelessWidget {
   }
 }
 
-// Dummy data for the 9 calculator cards with network image URLs
 final List<Map<String, String>> cardData = [
   {
     'imageUrl': 'assets/calculator_icons/loan.png',
@@ -172,11 +157,8 @@ final List<Map<String, String>> cardData = [
     'description': 'Calculate your returns on Senior Citizen Savings Scheme (SCSS)',
     'buttonText': 'Calculate Now'
   },
-
-
 ];
 
-// Custom Card Widget with the desired design
 class CalculatorCard extends StatelessWidget {
   final String imageUrl;
   final String title;
@@ -196,63 +178,62 @@ class CalculatorCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.white, // Set card color to white
+      color: Colors.white,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0), // Rounded corners
+        borderRadius: BorderRadius.circular(10.0),
       ),
-      elevation: 2.0, // Subtle shadow
+      elevation: 2.0,
       child: Padding(
-        padding: const EdgeInsets.all(16.0), // Inner padding
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Image container with border
             Container(
               padding: const EdgeInsets.all(8.0),
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.teal, width: 2), // Border around the image
-                borderRadius: BorderRadius.circular(8), // Rounded corners for image container
+                border: Border.all(color: Colors.teal, width: 2),
+                borderRadius: BorderRadius.circular(8),
               ),
               child: Image.network(
                 imageUrl,
-                height: 50.0, // Adjust size as needed
-                width: 50.0,  // Adjust size as needed
-                fit: BoxFit.cover, // Ensures the image covers the space without distortion
+                height: 50.0,
+                width: 50.0,
+                fit: BoxFit.cover,
               ),
             ),
-            const SizedBox(height: 20), // Space between image and title
+            const SizedBox(height: 10),
             Text(
               title,
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: Colors.teal,
               ),
               textAlign: TextAlign.start,
             ),
-            const SizedBox(height: 4), // Space between title and description
+            const SizedBox(height: 1),
             Text(
               description,
               textAlign: TextAlign.start,
               style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[600],
+                fontSize: 13,
+                color: Colors.black,
               ),
             ),
-            const SizedBox(height: 15), // Space between description and button
-
-            // Outlined button with green text and border
-            OutlinedButton(
+            const SizedBox(height: 10),
+            ElevatedButton(
               onPressed: onPressed,
-              style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: Colors.teal), // Green border
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal,  // Full teal background
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30.0), // Rounded button
+                  borderRadius: BorderRadius.circular(30.0),  // Rounded corners
                 ),
               ),
               child: Text(
                 buttonText,
-                style: const TextStyle(color: Colors.teal), // Green text
+                style: const TextStyle(
+                  color: Colors.white,  // White text color
+                ),
               ),
             ),
           ],

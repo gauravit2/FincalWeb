@@ -4,7 +4,7 @@ import 'package:fincalweb_project/helper/menu_bar.dart';
 import 'package:fincalweb_project/helper/size_config.dart';
 import 'package:fincalweb_project/helper/hover_image.dart';
 import 'package:fincalweb_project/helper/breadcrumb_navBar.dart'; // Import the BreadcrumbNavBar
-import 'package:fincalweb_project/view/get_started.dart';
+import 'package:fincalweb_project/view/get-started.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -183,7 +183,7 @@ class _HomePageState extends State<HomePage> {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  SizedBox(height: 4.h),
+                                  SizedBox(height: 6.h),
                                   Text(
                                     'Visualize your investment more\n easily',
                                     style: TextStyle(
@@ -201,7 +201,7 @@ class _HomePageState extends State<HomePage> {
                                       color: Colors.black,
                                     ),
                                   ),
-                                  SizedBox(height: 2.h),
+                                  SizedBox(height: 3.h),
                                   Row(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [

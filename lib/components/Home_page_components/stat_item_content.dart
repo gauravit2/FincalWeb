@@ -84,7 +84,7 @@ class StatItemContent extends StatelessWidget {
 
             ],
           ),
-          SizedBox(height: 1.h),
+          SizedBox(height: 2.h),
           Wrap(
             alignment: WrapAlignment.start,
             spacing: 20,
