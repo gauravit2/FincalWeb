@@ -26,9 +26,9 @@ class _KvpCalculatorState extends State<KvpCalculator> {
   double maturityAmount = 0.0;
   double totalInterestEarned = 0.0;
   double tempPrincipalAmount = 20000.0;
-  double annualInterestRate = 7.5; // Default interest rate
+  double annualInterestRate = 7.5;
   int tenureInYears = 9;
-  bool showResult = false; // Flag to control the display of the result section
+  bool showResult = false;
 
   @override
   void initState() {
@@ -82,11 +82,8 @@ class _KvpCalculatorState extends State<KvpCalculator> {
             children: [
               BreadcrumbNavBar(
                 breadcrumbItems: ['Home', 'Calculators', 'KVP Calculator'],
-                routes: ['/', '/get_started', '/kvp-calculator'],
-                currentRoute: ModalRoute
-                    .of(context)
-                    ?.settings
-                    .name ?? 'KVP Calculator',
+                routes: ['/', '/get-started', '/kvp-calculator'],
+                currentRoute: ModalRoute.of(context)?.settings.name ?? 'KVP Calculator',
               ),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 2.w),
