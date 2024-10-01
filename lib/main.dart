@@ -1,3 +1,4 @@
+import 'package:fincalweb_project/view/Calculators/emi-calculator.dart';
 import 'package:fincalweb_project/view/Calculators/fd-calculator.dart';
 import 'package:fincalweb_project/view/Calculators/kvp-calculator.dart';
 import 'package:fincalweb_project/view/Calculators/mf-calculator.dart';
@@ -11,7 +12,8 @@ import 'package:get/get.dart';
 import 'helper/get_di.dart' as di;
 import 'helper/size_config.dart';
 import 'package:fincalweb_project/view/HomePage.dart';
-import 'package:fincalweb_project/view//get-started.dart';
+import 'package:fincalweb_project/view//calculators.dart';
+import 'package:fincalweb_project/components/emi_calculator_components/prepayment_table.dart';
 
 
 
@@ -36,11 +38,12 @@ class MyApp extends StatelessWidget {
                   colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFF3D48A)),
                   primaryColor: Color(0xFFF3D48A),
                 ),
-                //home: HomePage(),
+               home: PrePaymentTable(),
+/*
                 initialRoute: '/',
                 routes: {
                   '/': (context) => HomePage(),
-                  '/get-started': (context) => AllCalculators(title: '', content: '',),
+                  '/calculators': (context) => AllCalculators(title: '', content: '',),
                   '/fd-calculator':(context) => FdCalculator(),
                   '/rd-calculator':(context) => RdCalculator(),
                   '/sip-calculator':(context) => SipCalculator(),
@@ -49,7 +52,13 @@ class MyApp extends StatelessWidget {
                   '/nsc-calculator':(context) =>NscCalculator(),
                   '/kvp-calculator':(context) =>KvpCalculator(),
                   '/scss-calculator':(context) =>ScssCalculator(),
+                  '/emi-calculator':(context) =>EmiCalculator(),
                 },
+
+
+ */
+
+
                 debugShowCheckedModeBanner: false,
               );
             },

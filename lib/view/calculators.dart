@@ -35,7 +35,7 @@ class AllCalculators extends StatelessWidget {
             children: [
               BreadcrumbNavBar(
                 breadcrumbItems: ['Home', 'Calculators'],
-                routes: ['/', '/get-started'],
+                routes: ['/', '/calculators'],
                 currentRoute: ModalRoute.of(context)?.settings.name ?? 'Calculators',
               ),
               const SizedBox(height: 20),
@@ -48,14 +48,14 @@ class AllCalculators extends StatelessWidget {
                   color: Colors.teal.shade800,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 40),
               GridView.builder(
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: crossAxisCount,
-                  crossAxisSpacing: 20.0,
-                  mainAxisSpacing: 30.0,
+                  crossAxisSpacing: 70.0,
+                  mainAxisSpacing: 70.0,
                   childAspectRatio: 1,
                 ),
                 itemCount: 9,
@@ -89,6 +89,9 @@ class AllCalculators extends StatelessWidget {
                       }
                       if (cardData[index]['title'] == 'SCSS Calculator') {
                         Navigator.pushNamed(context, '/scss-calculator');
+                      }
+                      if (cardData[index]['title'] == 'EMI Calculator') {
+                        Navigator.pushNamed(context, '/emi-calculator');
                       }
                     },
                   );
@@ -204,17 +207,17 @@ class CalculatorCard extends StatelessWidget {
             const SizedBox(height: 10),
             Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Colors.teal,
+                color: Colors.teal.shade900,
               ),
               textAlign: TextAlign.start,
             ),
             const SizedBox(height: 1),
             Text(
               description,
-              textAlign: TextAlign.start,
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 13,
                 color: Colors.black,

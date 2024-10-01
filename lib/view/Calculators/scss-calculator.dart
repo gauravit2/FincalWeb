@@ -71,7 +71,7 @@ class _ScssCalculatorState extends State<ScssCalculator> {
             children: [
               BreadcrumbNavBar(
                 breadcrumbItems: ['Home', 'Calculators', 'SCSS Calculator'],
-                routes: ['/', '/get-started', '/scss-calculator'],
+                routes: ['/', '/calculators', '/scss-calculator'],
                 currentRoute: ModalRoute.of(context)?.settings.name ?? 'SCSS Calculator',
               ),
               Padding(
@@ -175,6 +175,7 @@ class _ScssCalculatorState extends State<ScssCalculator> {
                     });
                   }
                 },
+
               ),
               SizedBox(height: 4.5.w),
               if (showResult)

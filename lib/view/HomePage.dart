@@ -4,7 +4,7 @@ import 'package:fincalweb_project/helper/menu_bar.dart';
 import 'package:fincalweb_project/helper/size_config.dart';
 import 'package:fincalweb_project/helper/hover_image.dart';
 import 'package:fincalweb_project/helper/breadcrumb_navBar.dart'; // Import the BreadcrumbNavBar
-import 'package:fincalweb_project/view/get-started.dart';
+import 'package:fincalweb_project/view/calculators.dart';
 
 class HomePage extends StatefulWidget {
   @override

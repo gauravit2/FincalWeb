@@ -76,7 +76,7 @@ class _RdCalculatorState extends State<RdCalculator> {
             children: [
               BreadcrumbNavBar(
                 breadcrumbItems: ['Home', 'Calculators', 'RD Calculator'],
-                routes: ['/', '/get-started', '/rd-calculator'],
+                routes: ['/', '/calculators', '/rd-calculator'],
                 currentRoute: ModalRoute.of(context)?.settings.name ?? 'RD Calculator',
               ),
               Padding(
@@ -180,6 +180,7 @@ class _RdCalculatorState extends State<RdCalculator> {
                     });
                   }
                 },
+
               ),
               SizedBox(height: 4.5.w),
               if (showResult)

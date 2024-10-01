@@ -76,7 +76,7 @@ class _PpfCalculatorState extends State<PpfCalculator> {
             children: [
               BreadcrumbNavBar(
                 breadcrumbItems: ['Home', 'Calculators', 'PPF Calculator'],
-                routes: ['/', '/get-started', '/ppf-calculator'],
+                routes: ['/', '/calculators', '/ppf-calculator'],
                 currentRoute: ModalRoute.of(context)?.settings.name ?? 'PPF Calculator',
               ),
               Padding(
@@ -180,6 +180,7 @@ class _PpfCalculatorState extends State<PpfCalculator> {
                     });
                   }
                 },
+
               ),
               SizedBox(height: 4.5.w),
               if (showResult)

@@ -34,7 +34,7 @@ class BreadcrumbNavBar extends StatelessWidget {
                   child: Text(
                     breadcrumbItems[index],
                     style: TextStyle(
-                      color: isCurrentPage ? Colors.grey : Colors.teal,
+                      color: isCurrentPage ? Colors.grey.shade800: Colors.teal,
                       fontSize: 12,
                       // decoration: isCurrentPage ? TextDecoration.none : TextDecoration.underline,
                     ),

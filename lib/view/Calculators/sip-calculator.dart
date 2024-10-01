@@ -76,7 +76,7 @@ class _SipCalculatorState extends State<SipCalculator> {
             children: [
               BreadcrumbNavBar(
                 breadcrumbItems: ['Home', 'Calculators', 'SIP Calculator'],
-                routes: ['/', '/get-started', '/sip-calculator'],
+                routes: ['/', '/calculators', '/sip-calculator'],
                 currentRoute: ModalRoute.of(context)?.settings.name ?? 'SIP Calculator',
               ),
               Padding(
@@ -180,6 +180,7 @@ class _SipCalculatorState extends State<SipCalculator> {
                     });
                   }
                 },
+
               ),
               SizedBox(height: 4.5.w),
               if (showResult)

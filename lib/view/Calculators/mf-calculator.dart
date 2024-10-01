@@ -74,7 +74,7 @@ class _MfCalculatorState extends State<MfCalculator> {
             children: [
               BreadcrumbNavBar(
                 breadcrumbItems: ['Home', 'Calculators', 'MF Calculator'],
-                routes: ['/', '/get-started', '/mf-calculator'],
+                routes: ['/', '/calculators', '/mf-calculator'],
                 currentRoute: ModalRoute.of(context)?.settings.name ?? 'MF Calculator',
               ),
               Padding(
@@ -178,6 +178,7 @@ class _MfCalculatorState extends State<MfCalculator> {
                     });
                   }
                 },
+
               ),
               SizedBox(height: 4.5.w),
               if (showResult)

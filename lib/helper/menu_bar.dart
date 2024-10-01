@@ -1,5 +1,5 @@
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
-import 'package:fincalweb_project/view/get-started.dart';
+import 'package:fincalweb_project/view/calculators.dart';
 import 'package:flutter/material.dart';
 import 'package:fincalweb_project/components/menuBar_components/AppName.dart';
 import 'package:fincalweb_project/components/menuBar_components/downloadApp.dart';
@@ -45,7 +45,7 @@ class _CustomMenuBarState extends State<CustomMenuBar> {
         } else {
           return Container(
             color: Colors.teal.shade800,
-            padding: EdgeInsets.symmetric(horizontal: 10.w),
+            padding: EdgeInsets.symmetric(horizontal: 10.w,),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -89,7 +89,7 @@ class _CustomMenuBarState extends State<CustomMenuBar> {
                       ),
                       DownloadButton(
                         downloadUrl: 'https://play.google.com/store/apps/details?id=com.gp.emicalculator',
-                      ), // Use the DownloadButton widget here
+                      ),
                     ],
                   ),
                 ),
@@ -106,12 +106,17 @@ class _CustomMenuBarState extends State<CustomMenuBar> {
     required Map<String, Widget> items,
   }) {
     return Container(
-      width: 200,
+      width: 170,
       child: CustomDropdown(
         decoration: CustomDropdownDecoration(
+          expandedBorderRadius: BorderRadius.only(
+           bottomLeft: Radius.circular(10.0),
+           bottomRight: Radius.circular(10.0)
+          ),
+          closedSuffixIcon: Container(),
           listItemStyle: TextStyle(color: Colors.white),
           hintStyle: TextStyle(color: Colors.white),
-          closedFillColor: Colors.teal.shade800,
+          closedFillColor: Colors.transparent,
           expandedFillColor: Colors.teal.shade400,
         ),
         hintText: title,

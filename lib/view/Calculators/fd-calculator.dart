@@ -68,7 +68,7 @@ class _FdCalculatorState extends State<FdCalculator> {
             children: [
               BreadcrumbNavBar(
                 breadcrumbItems: ['Home', 'Calculators', 'FD Calculator'],
-                routes: ['/', '/get-started', '/fd-calculator'],
+                routes: ['/', '/calculators', '/fd-calculator'],
                 currentRoute: ModalRoute.of(context)?.settings.name ?? 'FD Calculator',
               ),
               Padding(
@@ -172,6 +172,7 @@ class _FdCalculatorState extends State<FdCalculator> {
                     });
                   }
                 },
+
               ),
               SizedBox(height: 4.5.w),
               if (showResult)

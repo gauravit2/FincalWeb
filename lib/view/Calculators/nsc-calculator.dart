@@ -74,7 +74,7 @@ class _NscCalculatorState extends State<NscCalculator> {
             children: [
               BreadcrumbNavBar(
                 breadcrumbItems: ['Home', 'Calculators', 'NSC Calculator'],
-                routes: ['/', '/get-started', '/nsc-calculator'],
+                routes: ['/', '/calculators', '/nsc-calculator'],
                 currentRoute: ModalRoute.of(context)?.settings.name ?? 'NSC Calculator',
               ),
               Padding(
@@ -178,6 +178,7 @@ class _NscCalculatorState extends State<NscCalculator> {
                     });
                   }
                 },
+
               ),
               SizedBox(height: 4.5.w),
               if (showResult)

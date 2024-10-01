@@ -82,7 +82,7 @@ class _KvpCalculatorState extends State<KvpCalculator> {
             children: [
               BreadcrumbNavBar(
                 breadcrumbItems: ['Home', 'Calculators', 'KVP Calculator'],
-                routes: ['/', '/get-started', '/kvp-calculator'],
+                routes: ['/', '/calculators', '/kvp-calculator'],
                 currentRoute: ModalRoute.of(context)?.settings.name ?? 'KVP Calculator',
               ),
               Padding(
@@ -186,6 +186,7 @@ class _KvpCalculatorState extends State<KvpCalculator> {
                     });
                   }
                 },
+
               ),
               SizedBox(height: 4.5.w),
               if (showResult)
