@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class PrePaymentTable extends StatefulWidget {
+class PartPaymentTable extends StatefulWidget {
   @override
-  _PrePaymentTableState createState() => _PrePaymentTableState();
+  _PartPaymentTableState createState() => _PartPaymentTableState();
 }
 
-class _PrePaymentTableState extends State<PrePaymentTable> {
+class _PartPaymentTableState extends State<PartPaymentTable> {
   DateTime? _selectedDate;
   DateTime? _customSelectedDate;
   String _payingTerm = 'Tenure End';
@@ -94,67 +94,83 @@ class _PrePaymentTableState extends State<PrePaymentTable> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Pre Payment Table'),
-        backgroundColor: Colors.teal,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Column(
+    return Container(
+      child: Column(
+        children: [
+          Table(
+            border: TableBorder.all(
+              color: Colors.teal.shade300,
+              width: 1,
+            ),
+            columnWidths: const {
+              0: FlexColumnWidth(2),
+              1: FlexColumnWidth(2),
+              2: FlexColumnWidth(2),
+              3: FlexColumnWidth(2),
+              4: FlexColumnWidth(2),
+              5: FlexColumnWidth(2),
+            },
             children: [
-              Table(
-                border: TableBorder.all(
-                  color: Colors.teal.shade300,
-                  width: 1,
-                ),
-                columnWidths: const {
-                  0: FlexColumnWidth(2),
-                  1: FlexColumnWidth(2),
-                  2: FlexColumnWidth(2),
-                  3: FlexColumnWidth(2),
-                  4: FlexColumnWidth(2),
-                  5: FlexColumnWidth(2),
-                },
-                children: [
-                  TableRow(children: [
-                    _buildHeaderCell('Pre Payment Type'),
-                    _buildHeaderCell('Amount'),
-                    _buildHeaderCell('Starting From'),
-                    _buildHeaderCell('Paying Term'),
-                    _buildHeaderCell('Custom Date'),
-                    _buildHeaderCell('Actions'),
-                  ]),
-                ] +
-                    List.generate(_paymentRows.length, (index) {
-                      final row = _paymentRows[index];
-                      return TableRow(children: [
-                        Text(row['prePaymentType']),
-                        Text(row['amount']),
-                        Text(DateFormat('dd/MM/yyyy').format(row['startingDate'])),
-                        Text(row['payingTerm']),
-                        Text(row['customDate'] != null
+              TableRow(children: [
+                _buildHeaderCell('Part Payment Type'),
+                _buildHeaderCell('Amount'),
+                _buildHeaderCell('Starting From'),
+                _buildHeaderCell('Paying Term'),
+                _buildHeaderCell('Custom Date'),
+                _buildHeaderCell('Actions'),
+              ]),
+            ] +
+                List.generate(_paymentRows.length, (index) {
+                  final row = _paymentRows[index];
+                  return TableRow(children: [
+                    Center(
+                      child: Text(
+                        row['prePaymentType'],
+                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                    Center(
+                      child: Text(
+                        row['amount'],
+                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                    Center(
+                      child: Text(
+                        DateFormat('dd/MM/yyyy').format(row['startingDate']),
+                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                    Center(
+                      child: Text(
+                        row['payingTerm'],
+                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                    Center(
+                      child: Text(
+                        row['customDate'] != null
                             ? DateFormat('dd/MM/yyyy').format(row['customDate'])
-                            : 'N/A'),
-                        _buildActionButtonsCell(index),
-                      ]);
-                    }) +
-                    [
-                      TableRow(children: [
-                        _buildDropdownCell(['Monthly', 'Quarterly', 'Yearly', 'One time only']),
-                        _buildTextFieldCell(),
-                        _buildDateButtonCell(context, _selectedDate, _selectDate),
-                        _buildDropdownCell(['Tenure End', 'Custom Date'], isPayingTerm: true),
-                        _buildCustomDateButtonCell(context),
-                        _buildAddButtonCell(),
-                      ]),
-                    ],
-              ),
-            ],
+                            : 'N/A',
+                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                    Center(child: _buildActionButtonsCell(index)),
+                  ]);
+                })
+                +
+                [
+                  TableRow(children: [
+                    _buildDropdownCell(['Monthly', 'Quarterly', 'Yearly', 'One time only']),
+                    _buildTextFieldCell(),
+                    _buildDateButtonCell(context, _selectedDate, _selectDate),
+                    _buildDropdownCell(['Tenure End', 'Custom Date'], isPayingTerm: true),
+                    _buildCustomDateButtonCell(context),
+                    _buildAddButtonCell(),
+                  ]),
+                ],
           ),
-        ),
+        ],
       ),
     );
   }
@@ -308,10 +324,32 @@ class _PrePaymentTableState extends State<PrePaymentTable> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         IconButton(
+          icon: Icon(Icons.edit, color: Colors.black),
+          onPressed: () {
+            _editRow(index);
+          },
+        ),
+        SizedBox(width: 3.0,),
+        IconButton(
           icon: Icon(Icons.delete, color: Colors.black),
           onPressed: () => _deleteRow(index),
         ),
       ],
     );
   }
+
+  void _editRow(int index) {
+    // Prepopulate the fields with existing values
+    setState(() {
+      _prePaymentType = _paymentRows[index]['prePaymentType'];
+      _amount = _paymentRows[index]['amount'];
+      _selectedDate = _paymentRows[index]['startingDate'];
+      _payingTerm = _paymentRows[index]['payingTerm'];
+      _customSelectedDate = _paymentRows[index]['customDate'];
+
+      // Remove the current row, so the user can edit and save as new
+      _paymentRows.removeAt(index);
+    });
+  }
+
 }

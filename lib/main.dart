@@ -13,7 +13,7 @@ import 'helper/get_di.dart' as di;
 import 'helper/size_config.dart';
 import 'package:fincalweb_project/view/HomePage.dart';
 import 'package:fincalweb_project/view//calculators.dart';
-import 'package:fincalweb_project/components/emi_calculator_components/prepayment_table.dart';
+import 'package:fincalweb_project/components/emi_calculator_components/partpayment_table.dart';
 
 
 
@@ -38,8 +38,7 @@ class MyApp extends StatelessWidget {
                   colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFF3D48A)),
                   primaryColor: Color(0xFFF3D48A),
                 ),
-               home: PrePaymentTable(),
-/*
+               //home: PartPaymentTable(),
                 initialRoute: '/',
                 routes: {
                   '/': (context) => HomePage(),
@@ -54,11 +53,6 @@ class MyApp extends StatelessWidget {
                   '/scss-calculator':(context) =>ScssCalculator(),
                   '/emi-calculator':(context) =>EmiCalculator(),
                 },
-
-
- */
-
-
                 debugShowCheckedModeBanner: false,
               );
             },

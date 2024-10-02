@@ -5,7 +5,9 @@ import 'package:fincalweb_project/helper/breadcrumb_navBar.dart';
 import 'package:fincalweb_project/helper/Calculate_button.dart';
 import 'package:fincalweb_project/helper/InvestmentResult.dart';
 import 'dart:math';
-import 'package:intl/intl.dart'; // For date formatting
+import 'package:intl/intl.dart';
+
+import '../../components/emi_calculator_components/partpayment_table.dart'; // For date formatting
 
 class EmiCalculator extends StatefulWidget {
   const EmiCalculator({super.key});
@@ -24,7 +26,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
 
   double tempPrincipalAmount = 1000.0;
   double annualInterestRate = 8.0;
-  String selectedTenure = 'Monthly';
+  String selectedTenure = 'Month';
   double emi = 0.0;
   double totalPayment = 0.0;
   double totalInterest = 0.0;
@@ -34,7 +36,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
   double _principalInputValue = 1000.0;
   int _tenureInputValue = 10;
 
-  final List<String> tenureOptions = ['Monthly', 'Yearly']; // Tenure options
+  final List<String> tenureOptions = ['Month', 'Year']; // Tenure options
 
   @override
   void initState() {
@@ -57,7 +59,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
     double principalAmount = tempPrincipalAmount;
 
     int tenure;
-    if (selectedTenure == 'Monthly') {
+    if (selectedTenure == 'Month') {
       tenure = _tenureInputValue;
     } else {
       tenure = _tenureInputValue * 12;
@@ -195,25 +197,6 @@ class _EmiCalculatorState extends State<EmiCalculator> {
 // Add the loan tenure dropdown on the next row
                       Row(
                         children: [
-                          // Dropdown for selecting the tenure (Monthly or Yearly)
-                          Flexible(
-                            flex: 1,
-                            child: Container(
-                              width: 54.w, // Set the width to minimize the dropdown
-                              child: _buildDropdownField(
-                                label: "Tenure Type",
-                                value: selectedTenure,
-                                items: tenureOptions,
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    selectedTenure = newValue ?? selectedTenure;
-                                  });
-                                },
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 2.w),
-
                           // Input field to allow users to enter the tenure (in months or years)
                           Flexible(
                             flex: 1,
@@ -223,7 +206,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                                 controller: _tenureController,
                                 decoration: InputDecoration(
                                   labelText: "Enter Tenure",
-                                  hintText: selectedTenure == 'Monthly'
+                                  hintText: selectedTenure == 'Month'
                                       ? 'Enter months'
                                       : 'Enter years',
                                   border: OutlineInputBorder(),
@@ -248,6 +231,25 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                               ),
                             ),
                           ),
+
+                          // Dropdown for selecting the tenure (Monthly or Yearly)
+                          SizedBox(width: 2.w),
+                          Flexible(
+                            flex: 1,
+                            child: Container(
+                              width: 54.w, // Set the width to minimize the dropdown
+                              child: _buildDropdownField(
+                                label: "Tenure Type",
+                                value: selectedTenure,
+                                items: tenureOptions,
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    selectedTenure = newValue ?? selectedTenure;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
                         ],
                       ),
 
@@ -255,6 +257,8 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                   ),
                 ),
               ),
+            PartPaymentTable(),
+              SizedBox(height: 5.w,),
               CalculateButton(
                 onPressed: () {
                   if (_formKey.currentState?.validate() ?? false) {
@@ -351,3 +355,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
     );
   }
 }
+
+
+
+
