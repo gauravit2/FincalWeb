@@ -14,6 +14,7 @@ import 'helper/size_config.dart';
 import 'package:fincalweb_project/view/HomePage.dart';
 import 'package:fincalweb_project/view//calculators.dart';
 import 'package:fincalweb_project/components/emi_calculator_components/partpayment_table.dart';
+import 'package:fincalweb_project/components/emi_calculator_components/table.dart';
 
 
 
@@ -38,7 +39,7 @@ class MyApp extends StatelessWidget {
                   colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFF3D48A)),
                   primaryColor: Color(0xFFF3D48A),
                 ),
-               //home: PartPaymentTable(),
+               //home: PaymentTable(),
                 initialRoute: '/',
                 routes: {
                   '/': (context) => HomePage(),

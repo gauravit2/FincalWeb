@@ -179,12 +179,16 @@ class _PartPaymentTableState extends State<PartPaymentTable> {
     return Container(
       padding: const EdgeInsets.all(8.0),
       color: Colors.teal.shade700,
-      child: Text(
-        title,
-        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+      child: Center( // Center the text inside the header cell
+        child: Text(
+          title,
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }
+
 
   Widget _buildDropdownCell(List<String> items, {bool isPayingTerm = false}) {
     return Padding(
@@ -299,11 +303,11 @@ class _PartPaymentTableState extends State<PartPaymentTable> {
       child: Center( // Center the button
         child: ElevatedButton.icon(
           onPressed: _amount != null && _selectedDate != null ? _addRow : null,
-          icon: Icon(Icons.add, color: Colors.black, size: 16),
-          label: Text('Add', style: TextStyle(color: Colors.black, fontSize: 14)),
+          icon: Icon(Icons.add, color: Colors.teal.shade800, size: 16),
+          label: Text('Add', style: TextStyle(color: Colors.teal.shade800, fontSize: 14)),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.white, // Button color set to white
-            foregroundColor: Colors.black, // Ensure text and icon color are black
+            foregroundColor: Colors.teal.shade800, // Ensure text and icon color are teal
             padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 20.0),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(0.0), // Square corners

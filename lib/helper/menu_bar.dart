@@ -106,7 +106,7 @@ class _CustomMenuBarState extends State<CustomMenuBar> {
     required Map<String, Widget> items,
   }) {
     return Container(
-      width: 180,
+      width: 190,
       child: CustomDropdown(
         decoration: CustomDropdownDecoration(
           expandedBorderRadius: BorderRadius.only(

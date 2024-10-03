@@ -1,3 +1,4 @@
+import 'package:fincalweb_project/components/emi_calculator_components/table.dart';
 import 'package:flutter/material.dart';
 import 'package:fincalweb_project/helper/menu_bar.dart';
 import 'package:fincalweb_project/helper/size_config.dart';
@@ -7,7 +8,7 @@ import 'package:fincalweb_project/helper/InvestmentResult.dart';
 import 'dart:math';
 import 'package:intl/intl.dart';
 
-import '../../components/emi_calculator_components/partpayment_table.dart'; // For date formatting
+import '../../components/emi_calculator_components/partpayment_table.dart';
 
 class EmiCalculator extends StatefulWidget {
   const EmiCalculator({super.key});
@@ -278,6 +279,10 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                   maturityValue: double.parse(totalPayment.toStringAsFixed(0)), // Pass totalPayment as maturityValue
                 ),
 
+
+              SizedBox(height: 2.w),
+              if (showResult)
+                PaymentTable(), // Call PaymentTable after showing the results
 
               SizedBox(height: 2.w),
             ],
