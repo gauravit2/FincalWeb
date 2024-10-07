@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
+
+import '../../controller/part_payment_controller.dart';
 
 class PartPaymentTable extends StatefulWidget {
   @override
   _PartPaymentTableState createState() => _PartPaymentTableState();
+
 }
+
+final PartPaymentController controller = Get.find<PartPaymentController>();
 
 class _PartPaymentTableState extends State<PartPaymentTable> {
   DateTime? _selectedDate;
@@ -234,6 +241,7 @@ class _PartPaymentTableState extends State<PartPaymentTable> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextField(
+        controller: controller.partPaymentAmount,
         decoration: InputDecoration(
           hintText: 'Part Payment Amount',
           fillColor: Colors.white,

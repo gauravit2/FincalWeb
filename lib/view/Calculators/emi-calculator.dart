@@ -1,17 +1,20 @@
-import 'package:fincalweb_project/components/emi_calculator_components/table.dart';
+import 'package:fincalweb_project/controller/part_payment_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:fincalweb_project/components/emi_calculator_components/partpayment_table.dart';
 import 'package:fincalweb_project/helper/menu_bar.dart';
 import 'package:fincalweb_project/helper/size_config.dart';
 import 'package:fincalweb_project/helper/breadcrumb_navBar.dart';
 import 'package:fincalweb_project/helper/Calculate_button.dart';
-import 'package:fincalweb_project/helper/InvestmentResult.dart';
 import 'dart:math';
-import 'package:intl/intl.dart';
-
-import '../../components/emi_calculator_components/partpayment_table.dart';
+import 'package:fincalweb_project/components/emi_calculator_components/table.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:get/get.dart';
 
 class EmiCalculator extends StatefulWidget {
-  const EmiCalculator({super.key});
+  EmiCalculator({super.key});
+
+  final PartPaymentController controller = Get.find<PartPaymentController>();
 
   @override
   _EmiCalculatorState createState() => _EmiCalculatorState();
@@ -31,29 +34,37 @@ class _EmiCalculatorState extends State<EmiCalculator> {
   double emi = 0.0;
   double totalPayment = 0.0;
   double totalInterest = 0.0;
+  double partPayment = 500.0;
   bool showResult = false;
   DateTime? selectedStartDate;
 
   double _principalInputValue = 1000.0;
   int _tenureInputValue = 10;
 
-  final List<String> tenureOptions = ['Month', 'Year']; // Tenure options
+  final List<String> tenureOptions = ['Month', 'Year'];
+
+  var value;
 
   @override
   void initState() {
     super.initState();
 
-    _principalController = TextEditingController(text: tempPrincipalAmount.toString());
-    _interestRateController = TextEditingController(text: annualInterestRate.toString());
+    _principalController =
+        TextEditingController(text: tempPrincipalAmount.toString());
+    _interestRateController =
+        TextEditingController(text: annualInterestRate.toString());
 
     // Set default date to current date
     selectedStartDate = DateTime.now();
     _startDateController = TextEditingController(
       text: DateFormat('dd/MM/yyyy').format(selectedStartDate!),
     );
-    _tenureController = TextEditingController(text: _tenureInputValue.toString());
+    _tenureController =
+        TextEditingController(text: _tenureInputValue.toString());
+
+    // Calculate the EMI as soon as the widget is built
     calculateEMI();
-    showResult = true;
+    showResult = true; // Show results immediately
   }
 
   void calculateEMI() {
@@ -66,8 +77,11 @@ class _EmiCalculatorState extends State<EmiCalculator> {
       tenure = _tenureInputValue * 12;
     }
 
-    double monthlyInterestRate = calculateMonthlyInterestRate(annualInterestRate);
-    emi = (principalAmount * monthlyInterestRate * pow(1 + monthlyInterestRate, tenure)) /
+    double monthlyInterestRate =
+        calculateMonthlyInterestRate(annualInterestRate);
+    emi = (principalAmount *
+            monthlyInterestRate *
+            pow(1 + monthlyInterestRate, tenure)) /
         (pow(1 + monthlyInterestRate, tenure) - 1);
     totalPayment = emi * tenure;
     totalInterest = totalPayment - principalAmount;
@@ -91,7 +105,8 @@ class _EmiCalculatorState extends State<EmiCalculator> {
     if (pickedDate != null && pickedDate != selectedStartDate) {
       setState(() {
         selectedStartDate = pickedDate;
-        _startDateController.text = DateFormat('dd/MM/yyyy').format(selectedStartDate!);
+        _startDateController.text =
+            DateFormat('dd/MM/yyyy').format(selectedStartDate!);
       });
     }
   }
@@ -115,7 +130,8 @@ class _EmiCalculatorState extends State<EmiCalculator> {
               BreadcrumbNavBar(
                 breadcrumbItems: ['Home', 'Calculators', 'EMI Calculator'],
                 routes: ['/', '/calculators', '/emi-calculator'],
-                currentRoute: ModalRoute.of(context)?.settings.name ?? 'EMI Calculator',
+                currentRoute:
+                    ModalRoute.of(context)?.settings.name ?? 'EMI Calculator',
               ),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 2.w),
@@ -162,7 +178,8 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                             },
                             onChanged: (value) {
                               setState(() {
-                                _principalInputValue = double.tryParse(value) ?? 0; // Store user input here
+                                _principalInputValue = double.tryParse(value) ??
+                                    0; // Store user input here
                               });
                             },
                           ),
@@ -182,7 +199,9 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                             },
                             onChanged: (value) {
                               setState(() {
-                                annualInterestRate = double.tryParse(value) ?? 0;
+                                annualInterestRate =
+                                    double.tryParse(value) ?? 0;
+                                calculateEMI(); // Recalculate EMI when the interest rate changes
                               });
                             },
                           ),
@@ -195,14 +214,13 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                         ],
                       ),
                       SizedBox(height: 5.w),
-// Add the loan tenure dropdown on the next row
                       Row(
                         children: [
-                          // Input field to allow users to enter the tenure (in months or years)
                           Flexible(
                             flex: 1,
                             child: Container(
-                              width: 54.w, // Set the width to minimize the input field
+                              width: 54
+                                  .w, // Set the width to minimize the input field
                               child: TextFormField(
                                 controller: _tenureController,
                                 decoration: InputDecoration(
@@ -221,24 +239,25 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                                   if (tenureValue == null || tenureValue <= 0) {
                                     return 'Enter a valid tenure';
                                   }
-                                  _tenureInputValue = tenureValue; // Update the tenure value
+                                  _tenureInputValue =
+                                      tenureValue; // Update the tenure value
                                   return null;
                                 },
                                 onChanged: (value) {
                                   setState(() {
-                                    _tenureInputValue = int.tryParse(value) ?? 1;
+                                    _tenureInputValue =
+                                        int.tryParse(value) ?? 1;
+                                    calculateEMI(); // Recalculate EMI when the tenure changes
                                   });
                                 },
                               ),
                             ),
                           ),
-
-                          // Dropdown for selecting the tenure (Monthly or Yearly)
                           SizedBox(width: 2.w),
                           Flexible(
                             flex: 1,
                             child: Container(
-                              width: 54.w, // Set the width to minimize the dropdown
+                              width: 54.w,
                               child: _buildDropdownField(
                                 label: "Tenure Type",
                                 value: selectedTenure,
@@ -246,6 +265,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                                 onChanged: (String? newValue) {
                                   setState(() {
                                     selectedTenure = newValue ?? selectedTenure;
+                                    calculateEMI(); // Recalculate EMI when the tenure type changes
                                   });
                                 },
                               ),
@@ -253,18 +273,18 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                           ),
                         ],
                       ),
-
                     ],
                   ),
                 ),
               ),
-            PartPaymentTable(),
-              SizedBox(height: 5.w,),
+              PartPaymentTable(),
+              SizedBox(height: 5.w),
               CalculateButton(
                 onPressed: () {
                   if (_formKey.currentState?.validate() ?? false) {
                     setState(() {
-                      tempPrincipalAmount = _principalInputValue; // Update tempPrincipalAmount only here
+                      tempPrincipalAmount =
+                          _principalInputValue; // Update tempPrincipalAmount only here
                       calculateEMI();
                       showResult = true;
                     });
@@ -272,19 +292,177 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                 },
               ),
               SizedBox(height: 4.5.w),
-              if (showResult)
-                InvestmentResult(
-                  principalAmount: double.parse(tempPrincipalAmount.toStringAsFixed(0)),
-                  totalInterestEarned: double.parse(totalInterest.toStringAsFixed(0)), // Pass totalInterest as totalInterestEarned
-                  maturityValue: double.parse(totalPayment.toStringAsFixed(0)), // Pass totalPayment as maturityValue
-                ),
+              SizedBox(height: 4.5.w),
+              Column(
+                // Start directly with Column
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Investment result header
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          width: 10.w,
+                          height: 7.w,
+                          decoration: BoxDecoration(
+                            color: Colors.teal.shade200,
+                          ),
+                          child: Center(
+                            child: Text(
+                              "Investment Result",
+                              style: TextStyle(
+                                  fontSize: 2.t,
+                                  color: Colors.teal.shade800,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 5.w),
 
+                  Row(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start, // Align pie chart and details
+                    children: [
+                      // Pie chart section
+                      SizedBox(
+                        height: 30.w,
+                        width: 35.w, // Adjusted pie chart size
+                        child: PieChart(
+                          PieChartData(
+                            sections: [
+                              PieChartSectionData(
+                                color: Colors.green,
+                                value: tempPrincipalAmount, // Principal Amount
+                                title: '', // No titles in the slices
+                                radius: 35,
+                              ),
+                              PieChartSectionData(
+                                color: Colors.orangeAccent,
+                                value: totalInterest, // Interest Amount
+                                title: '',
+                                radius: 35,
+                              ),
+                              PieChartSectionData(
+                                color: Colors.blue,
+                                value: double.tryParse(controller.partPaymentValue.value) ?? 0.0, // Interest Amount
+                                title: '',
+                                radius: 35,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
 
-              SizedBox(height: 2.w),
-              if (showResult)
-                PaymentTable(), // Call PaymentTable after showing the results
+                      SizedBox(width: 8.w), // Space between pie chart and table
 
-              SizedBox(height: 2.w),
+                      // Table section for investment details with updated layout
+                      Container(
+                        width: 400,
+                        height: 145,
+                        padding: EdgeInsets.all(5),
+                        color: Colors.grey.shade100,
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.rectangle,
+                                      color: Colors.green),
+                                ),
+                                SizedBox(
+                                  width: 12,
+                                ),
+                                Text('Principle Amount'),
+                                Spacer(),
+                                Text(tempPrincipalAmount.toString()),
+                              ],
+                            ),
+                            SizedBox(height: 12,),
+                            Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.rectangle,
+                                      color: Colors.orange),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text('Interest Rate'),
+                                Spacer(),
+                                Text(totalInterest.toStringAsFixed(0)),
+                              ],
+                            ),
+                            SizedBox(height: 12,),
+                            Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.rectangle,
+                                      color: Colors.blue),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text('Part payment'),
+                                Spacer(),
+                                Text(controller.partPaymentValue.value)
+                              ],
+                            ),
+
+                            SizedBox(height: 12,),
+                            Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.rectangle,
+                                      color: Colors.blue.shade800),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text('Total Amount'),
+                                Spacer(),
+                                Text(totalPayment.toStringAsFixed(0)),
+                              ],
+                            ),
+                            // Increase distance between the table and ad
+                            SizedBox(width: 20.w),
+
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: 15.w),    // ad container
+                      Container(
+                        width: 40.w, // Increased width for the ad
+                        height: 30.w, // Increased height for the ad
+                        decoration: BoxDecoration(
+                          color: Colors.teal.shade100,
+                          borderRadius: BorderRadius.circular(10),
+                          border:
+                          Border.all(color: Colors.teal.shade800),
+                        ),
+                        child: Center(
+                          child: Text(
+                            "Ad",
+                            style: TextStyle(
+                                fontSize: 2.5.t,
+                                color: Colors.teal.shade700),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ],
           ),
         ),
@@ -314,7 +492,6 @@ class _EmiCalculatorState extends State<EmiCalculator> {
     );
   }
 
-  // Custom widget for date input
   Widget _buildDateField({
     required TextEditingController controller,
     required String label,
@@ -333,6 +510,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
       ),
     );
   }
+
 
   // Custom widget for the tenure type dropdown
   Widget _buildDropdownField({
@@ -360,7 +538,3 @@ class _EmiCalculatorState extends State<EmiCalculator> {
     );
   }
 }
-
-
-
-

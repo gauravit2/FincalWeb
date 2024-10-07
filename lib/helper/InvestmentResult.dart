@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:fincalweb_project/helper/size_config.dart';
+import 'package:intl/intl.dart';
 
 class InvestmentResult extends StatelessWidget {
   final double principalAmount;
@@ -141,7 +142,7 @@ class InvestmentResult extends StatelessWidget {
               SizedBox(width: 1.5.w), // Spacing between icon and label
               Text(
                 "$label",
-                style: TextStyle(fontSize: 1.3.t, color: Colors.black), // Compact font size
+                style: TextStyle(fontSize: 1.3.t, color: Colors.black),
               ),
             ],
           ),
@@ -149,8 +150,8 @@ class InvestmentResult extends StatelessWidget {
         Padding(
           padding: EdgeInsets.symmetric(vertical: 0.5.w),
           child: Text(
-            "₹ ${value}",
-            style: TextStyle(fontSize: 1.3.t, color: Colors.black), // Compact font size for value
+            " ${NumberFormat.currency(symbol: '₹ ', decimalDigits: 0).format(value)}",
+            style: TextStyle(fontSize: 1.3.t, color: Colors.black),
             textAlign: TextAlign.right,
           ),
         ),
