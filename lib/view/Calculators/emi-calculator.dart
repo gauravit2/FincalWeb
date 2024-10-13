@@ -31,10 +31,10 @@ class _EmiCalculatorState extends State<EmiCalculator> {
   double tempPrincipalAmount = 1000.0;
   double annualInterestRate = 8.0;
   String selectedTenure = 'Month';
-  double emi = 0.0;
+  // double emi = 0.0;
   double totalPayment = 0.0;
   double totalInterest = 0.0;
-  double partPayment = 500.0;
+  double partPayment = 0.0;
   bool showResult = false;
   DateTime? selectedStartDate;
 
@@ -68,32 +68,98 @@ class _EmiCalculatorState extends State<EmiCalculator> {
   }
 
   void calculateEMI() {
-    double principalAmount = tempPrincipalAmount;
+    double outstanding = tempPrincipalAmount;
 
-    int tenure;
+    double tenure;
     if (selectedTenure == 'Month') {
-      tenure = _tenureInputValue;
+      tenure = _tenureInputValue.toDouble();
     } else {
       tenure = _tenureInputValue * 12;
     }
 
-    double monthlyInterestRate =
-        calculateMonthlyInterestRate(annualInterestRate);
-    emi = (principalAmount *
-            monthlyInterestRate *
-            pow(1 + monthlyInterestRate, tenure)) /
-        (pow(1 + monthlyInterestRate, tenure) - 1);
-    totalPayment = emi * tenure;
-    totalInterest = totalPayment - principalAmount;
+    // double roiPerMonth = calculateMonthlyInterestRate(annualInterestRate);
+    // double emi = (principalAmount *
+    //     roiPerMonth *
+    //         pow(1 + roiPerMonth, tenure)) /
+    //     (pow(1 + roiPerMonth, tenure) - 1);
 
+    double roiPerMonth = calculateRateOfInterestPerMonth(annualInterestRate);
+    double power = calculatePower(roiPerMonth, tenure);
+    double emi = calculateEmi(outstanding, roiPerMonth, power);
+    totalPayment = emi * tenure;
+    totalInterest = totalPayment - outstanding;
+
+    for (int i = 0; i < tenure; i++) {
+      double interest = calculateInterest(outstanding, roiPerMonth);
+      double principle = 0;
+      if (emi < outstanding) {
+        principle = calculatePrinciple(emi, interest);
+      } else {
+        principle = outstanding;
+      }
+
+      double partPayment = 0.0;//calculatePartPayment(emiCurrMonAndYearCal);
+      if (emi > outstanding && partPayment != 0) {
+        partPayment = 0;
+        outstanding = outstanding - principle;
+      } else {
+        print("outstanding = $outstanding partpayment $partPayment");
+        outstanding = calculateOutstanding(outstanding, principle);
+        if (outstanding < partPayment) {
+          partPayment = outstanding;
+          outstanding = 0;
+        } else
+          outstanding -= partPayment;
+      }
+
+      String year = CalenderHelper.getYear(emiCurrMonAndYearCal);
+      String month = CalenderHelper.getMonth(emiCurrMonAndYearCal);
+
+      LoanDetail loanDetail = new LoanDetail();
+      loanDetail.setYear(year);
+      loanDetail.setMonth(month);
+      loanDetail.setPrinciple(Math.round(principle));
+      loanDetail.setInterest(Math.round(interest));
+      loanDetail.setPartpayment(Math.round(partPayment));
+      loanDetail.setOutstanding(Math.round(outstanding));
+      loanDetailArrayList.add(loanDetail);
+    }
+
+    // print("principle = $out interest = $totalInterest part payment = $partPayment Total Payment = $totalPayment");
     setState(() {
       showResult = true; // Show results after calculation
     });
   }
 
+  double calculatePower(double roiPerMonth, double tenure) {
+    double power = pow(1 + roiPerMonth, tenure).toDouble();
+    print("power = $power");
+    return power;
+  }
+
+  double calculateEmi(double outstanding, double roiPerMonth, double power) {
+    return (outstanding * roiPerMonth * power) / (power - 1);
+  }
+
   double calculateMonthlyInterestRate(double rateOfInterest) {
     return rateOfInterest / (12 * 100); // Monthly rate as a decimal
   }
+
+  double calculateRateOfInterestPerMonth(double rateOfInterest) {
+    return (rateOfInterest / 12) / 100;
+  }
+
+  double calculateInterest(double outstanding, double roiPerMonth) {
+    return outstanding * roiPerMonth;
+  }
+  double calculatePrinciple(double emi, double interest) {
+    return emi - interest;
+  }
+
+  double calculateOutstanding(double outstanding, double principle) {
+    return outstanding - principle;
+  }
+
 
   Future<void> _selectDate(BuildContext context) async {
     DateTime? pickedDate = await showDatePicker(
@@ -219,8 +285,8 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                           Flexible(
                             flex: 1,
                             child: Container(
-                              width: 54
-                                  .w, // Set the width to minimize the input field
+                              width: 54.w,
+                              // Set the width to minimize the input field
                               child: TextFormField(
                                 controller: _tenureController,
                                 decoration: InputDecoration(
@@ -347,7 +413,10 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                               ),
                               PieChartSectionData(
                                 color: Colors.blue,
-                                value: double.tryParse(controller.partPaymentValue.value) ?? 0.0, // Interest Amount
+                                value: double.tryParse(
+                                        controller.partPaymentValue.value) ??
+                                    0.0,
+                                // Interest Amount
                                 title: '',
                                 radius: 35,
                               ),
@@ -356,7 +425,8 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                         ),
                       ),
 
-                      SizedBox(width: 8.w), // Space between pie chart and table
+                      SizedBox(width: 8.w),
+                      // Space between pie chart and table
 
                       // Table section for investment details with updated layout
                       Container(
@@ -382,7 +452,9 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                                 Text(tempPrincipalAmount.toString()),
                               ],
                             ),
-                            SizedBox(height: 12,),
+                            SizedBox(
+                              height: 12,
+                            ),
                             Row(
                               children: [
                                 Container(
@@ -399,7 +471,9 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                                 Text(totalInterest.toStringAsFixed(0)),
                               ],
                             ),
-                            SizedBox(height: 12,),
+                            SizedBox(
+                              height: 12,
+                            ),
                             Row(
                               children: [
                                 Container(
@@ -417,7 +491,9 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                               ],
                             ),
 
-                            SizedBox(height: 12,),
+                            SizedBox(
+                              height: 12,
+                            ),
                             Row(
                               children: [
                                 Container(
@@ -436,26 +512,24 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                             ),
                             // Increase distance between the table and ad
                             SizedBox(width: 20.w),
-
                           ],
                         ),
                       ),
-                      SizedBox(width: 15.w),    // ad container
+                      SizedBox(width: 15.w),
+                      // ad container
                       Container(
                         width: 40.w, // Increased width for the ad
                         height: 30.w, // Increased height for the ad
                         decoration: BoxDecoration(
                           color: Colors.teal.shade100,
                           borderRadius: BorderRadius.circular(10),
-                          border:
-                          Border.all(color: Colors.teal.shade800),
+                          border: Border.all(color: Colors.teal.shade800),
                         ),
                         child: Center(
                           child: Text(
                             "Ad",
                             style: TextStyle(
-                                fontSize: 2.5.t,
-                                color: Colors.teal.shade700),
+                                fontSize: 2.5.t, color: Colors.teal.shade700),
                           ),
                         ),
                       ),
@@ -510,7 +584,6 @@ class _EmiCalculatorState extends State<EmiCalculator> {
       ),
     );
   }
-
 
   // Custom widget for the tenure type dropdown
   Widget _buildDropdownField({
