@@ -1,104 +1,275 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
+import 'package:intl/intl.dart';
+
+// Model for PartPayment
+class PartPayment {
+  final double principleAmount;
+  final String month;
+  final int year;
+  final double principal;
+  final double interest;
+  final double partPayment;
+  double totalPayment;
+  double outstanding;
+
+  PartPayment({
+    required this.month,
+    required this.year,
+    required this.principal,
+    required this.interest,
+    required this.partPayment,
+    required this.outstanding,
+    required this.principleAmount,
+  }) : totalPayment = principal + interest + partPayment;
+}
+
+// Function to generate the payment schedule
+List<PartPayment> generatePaymentSchedule(
+    double principal, double annualInterestRate, double tenureInMonths, List<PartPayment> partPayments) {
+  double roiPerMonth = (annualInterestRate / 12) / 100;
+  double emi = calculateEMI(principal, roiPerMonth, tenureInMonths);
+  double outstanding = principal;
+  List<PartPayment> paymentSchedule = [];
+
+  DateTime currentDate = DateTime.now();
+
+  for (int i = 0; i < tenureInMonths; i++) {
+    String month = DateFormat('MMM').format(currentDate);
+    int year = currentDate.year;
+
+    double interest = calculateInterest(outstanding, roiPerMonth);
+    double principalPortion = emi < outstanding ? calculatePrincipal(emi, interest) : outstanding;
+    double partPayment = calculatePartPayment(currentDate.month, year, partPayments);
+
+    outstanding = calculateOutstanding(outstanding, principalPortion);
+    if (outstanding < partPayment) {
+      partPayment = outstanding;
+      outstanding = 0;
+    } else {
+      outstanding -= partPayment;
+    }
+
+    paymentSchedule.add(
+      PartPayment(
+        principleAmount: principal,
+        month: month,
+        year: year,
+        principal: principalPortion,
+        interest: interest,
+        partPayment: partPayment,
+        outstanding: outstanding,
+      ),
+    );
+
+    if (outstanding <= 0) break;
+
+    currentDate = DateTime(currentDate.year, currentDate.month + 1);
+  }
+
+  return paymentSchedule;
+}
+
+double calculateEMI(double principal, double roiPerMonth, double tenureInMonths) {
+  double power = pow(1 + roiPerMonth, tenureInMonths).toDouble();
+  return (principal * roiPerMonth * power) / (power - 1);
+}
+
+double calculateInterest(double outstanding, double roiPerMonth) {
+  return outstanding * roiPerMonth;
+}
+
+double calculatePrincipal(double emi, double interest) {
+  return emi - interest;
+}
+
+double calculateOutstanding(double outstanding, double principal) {
+  return outstanding - principal;
+}
+
+double calculatePartPayment(int month, int year, List<PartPayment> partPayments) {
+  for (PartPayment payment in partPayments) {
+    if (int.parse(payment.month) == month && payment.year == year) {
+      return payment.partPayment;
+    }
+  }
+  return 0.0; // Ensure this is a double
+}
 
 class PaymentTable extends StatefulWidget {
+  final double principleAmount;
+  final String tenureType;
+  final double tenure;
+
+  const PaymentTable({
+    required this.principleAmount,
+    required this.tenureType,
+    required this.tenure,
+  });
+
   @override
   _PaymentTableState createState() => _PaymentTableState();
 }
 
 class _PaymentTableState extends State<PaymentTable> {
-  // To keep track of which year is expanded
-  bool is2024Expanded = false;
-  bool is2025Expanded = false;
+  Map<int, bool> yearExpandedMap = {};
+  List<PartPayment> paymentSchedule = [];
+  Map<int, double> totalPrincipalMap = {};
+  Map<int, double> totalInterestMap = {};
+  Map<int, double> totalPartPaymentMap = {};
+  Map<int, double> totalOutstandingMap = {};
+
+  @override
+  void initState() {
+    super.initState();
+    double tenureInMonths = widget.tenureType == "years" ? widget.tenure * 12 : widget.tenure;
+
+    paymentSchedule = generatePaymentSchedule(
+      widget.principleAmount,
+      7.0, // Annual Interest Rate
+      tenureInMonths,
+      [], // Empty part payment list for simplicity
+    );
+
+    // Calculate totals for each year
+    for (PartPayment payment in paymentSchedule) {
+      int year = payment.year;
+      totalPrincipalMap[year] = (totalPrincipalMap[year] ?? 0) + payment.principal;
+      totalInterestMap[year] = (totalInterestMap[year] ?? 0) + payment.interest;
+      totalPartPaymentMap[year] = (totalPartPaymentMap[year] ?? 0) + payment.partPayment;
+      totalOutstandingMap[year] = payment.outstanding;
+      yearExpandedMap[year] = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    double totalPrincipal = paymentSchedule.fold(0.0, (sum, item) => sum + item.principal);
+    double totalInterest = paymentSchedule.fold(0.0, (sum, item) => sum + item.interest);
+    double totalPartPayment = paymentSchedule.fold(0.0, (sum, item) => sum + item.partPayment);
+    double totalOutstanding = paymentSchedule.isNotEmpty ? paymentSchedule.last.outstanding : 0.0;
+
     return SingleChildScrollView(
       child: Container(
         padding: const EdgeInsets.all(8.0),
         color: Colors.white,
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Table(
-            border: TableBorder.all(
-              color: Colors.teal.shade300,
-              width: 1,
-            ),
-            columnWidths: const {
-              0: FlexColumnWidth(1.5),
-              1: FlexColumnWidth(2),
-              2: FlexColumnWidth(2),
-              3: FlexColumnWidth(2),
-              4: FlexColumnWidth(2.5),
-              5: FlexColumnWidth(2),
-            },
-            children: [
-              _buildHeaderRow(),
-              _buildExpandableRow('2024', is2024Expanded), // The expandable row for 2024
-              if (is2024Expanded) // Conditionally show child rows
-                _buildDataRow('  Nov', '50000', '3500', '2500', '56000', '200000', Colors.white),
-              if (is2024Expanded)
-                _buildDataRow('  Dec', '50000', '3500', '2500', '56000', '50000', Colors.white),
-              _buildExpandableRow('2025', is2025Expanded), // For future expandable year
-              if (is2025Expanded) // Conditionally show child rows
-                _buildDataRow('  Nov', '50000', '3500', '2500', '56000', '200000', Colors.white),
-              if (is2025Expanded)
-                _buildDataRow('  Dec', '50000', '3500', '2500', '56000', '50000', Colors.white),
-
-              _buildTotalRow('Total', '189000', '13000', '10000', '212000', '0'),
-
-
-            ],
+        child: Table(
+          border: TableBorder.all(
+            color: Colors.teal.shade300,
+            width: 1,
           ),
+          columnWidths: const {
+            0: FlexColumnWidth(1.5),
+            1: FlexColumnWidth(2),
+            2: FlexColumnWidth(2),
+            3: FlexColumnWidth(2),
+            4: FlexColumnWidth(2.5),
+            5: FlexColumnWidth(2),
+          },
+          children: [
+            _buildHeaderRow(),
+            ..._buildExpandableRows(),
+            _buildTotalsRow(totalPrincipal, totalInterest, totalPartPayment),
+          ],
         ),
       ),
     );
   }
 
   TableRow _buildHeaderRow() {
-    return TableRow(children: [
-      _buildHeaderCell('Year'),
-      _buildHeaderCell('Principal (A)'),
-      _buildHeaderCell('Interest (B)'),
-      _buildHeaderCell('Part Payments (C)'),
-      _buildHeaderCell('Total Payment (A+B+C)'),
-      _buildHeaderCell('Outstanding'),
-    ]);
+    return TableRow(
+      decoration: BoxDecoration(color: Colors.teal.shade400),
+      children: const [
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Center(child: Text('Year', style: TextStyle(color: Colors.white))),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Center(child: Text('Principal', style: TextStyle(color: Colors.white))),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Center(child: Text('Interest', style: TextStyle(color: Colors.white))),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Center(child: Text('Part Payment', style: TextStyle(color: Colors.white))),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Center(child: Text('Total Payment', style: TextStyle(color: Colors.white))),
+        ),
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Center(child: Text('Outstanding', style: TextStyle(color: Colors.white))),
+        ),
+      ],
+    );
   }
 
-  // Method to build rows that can expand/collapse
-  TableRow _buildExpandableRow(String year, bool isExpanded) {
+  List<TableRow> _buildExpandableRows() {
+    List<TableRow> rows = [];
+    Set<int> years = paymentSchedule.map((p) => p.year).toSet();
+
+    for (int year in years) {
+      rows.add(
+        _buildExpandableRow(
+          year.toString(),
+          yearExpandedMap[year]!,
+          totalPrincipalMap[year]!,
+          totalInterestMap[year]!,
+          totalPartPaymentMap[year]!,
+          totalOutstandingMap[year]!,
+        ),
+      );
+
+      if (yearExpandedMap[year]!) {
+        List<PartPayment> yearPayments = paymentSchedule.where((p) => p.year == year).toList();
+        rows.addAll(yearPayments.map((p) => _buildDataRow(
+          '  ${p.month}',
+          p.principal.toStringAsFixed(0),
+          p.interest.toStringAsFixed(0),
+          p.partPayment.toStringAsFixed(0),
+          p.totalPayment.toStringAsFixed(0),
+          p.outstanding.toStringAsFixed(0),
+          Colors.white,
+        )));
+      }
+    }
+
+    return rows;
+  }
+
+  TableRow _buildExpandableRow(String year, bool isExpanded, double principalTotal, double interestTotal, double partPaymentTotal, double outstandingTotal) {
     return TableRow(
       children: [
         GestureDetector(
           onTap: () {
             setState(() {
-              if (year == '2024') {
-                is2024Expanded = !is2024Expanded; // Toggle expanded state
-              }
-              if (year == '2025') {
-                is2025Expanded = !is2025Expanded; // Toggle expanded state
-              }
+              yearExpandedMap[int.parse(year)] = !isExpanded;
             });
           },
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
-            color: Colors.teal.shade400,
+            color: Colors.teal.shade100,
             child: Center(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon( // Add the icon here before the text
+                  Icon(
                     isExpanded ? Icons.remove : Icons.add,
-                    size: 16.0, // Minimize icon size
+                    size: 16.0,
                     color: Colors.black,
                   ),
-                  SizedBox(width: 5.0), // Add spacing between icon and text
+                  SizedBox(width: 5.0),
                   Text(
                     year,
                     style: const TextStyle(
                       fontWeight: FontWeight.normal,
-                      fontSize: 14,
+                      fontSize: 12,
                       color: Colors.black,
-                      decoration: TextDecoration.none, // Removes any yellow underline
+                      decoration: TextDecoration.none,
                     ),
                   ),
                 ],
@@ -106,91 +277,58 @@ class _PaymentTableState extends State<PaymentTable> {
             ),
           ),
         ),
-        _buildDataCell('100000', Colors.white),
-        _buildDataCell('7000', Colors.white),
-        _buildDataCell('5000', Colors.white),
-        _buildDataCell('112000', Colors.white),
-        _buildDataCell('100000', Colors.white),
+        _buildDataCell(principalTotal),
+        _buildDataCell(interestTotal),
+        _buildDataCell(partPaymentTotal),
+        _buildDataCell(principalTotal + interestTotal + partPaymentTotal),
+        _buildDataCell(outstandingTotal),
       ],
     );
   }
 
-  TableRow _buildDataRow(String year, String principal, String interest, String partPayments, String totalPayment, String outstanding, Color bgColor) {
-    return TableRow(children: [
-      _buildDataCell(year, bgColor),
-      _buildDataCell(principal, bgColor),
-      _buildDataCell(interest, bgColor),
-      _buildDataCell(partPayments, bgColor),
-      _buildDataCell(totalPayment, bgColor),
-      _buildDataCell(outstanding, bgColor),
-    ]);
-  }
-
-  TableRow _buildTotalRow(String label, String principal, String interest, String partPayments, String totalPayment, String outstanding) {
-    return TableRow(children: [
-      _buildTotalCell(label),
-      _buildTotalCell(principal),
-      _buildTotalCell(interest),
-      _buildTotalCell(partPayments),
-      _buildTotalCell(totalPayment),
-      _buildTotalCell(outstanding),
-    ]);
-  }
-
-  Widget _buildHeaderCell(String title) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
-      color: Colors.teal.shade700,
-      child: Center(
-        child: Text(
-          title,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            fontSize: 14,
-            decoration: TextDecoration.none, // Removes any yellow underline
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ),
+  TableRow _buildDataRow(String year, String principal, String interest, String partPayment, String totalPayment, String outstanding, Color bgColor) {
+    return TableRow(
+      children: [
+        _buildDataCell(year),
+        _buildDataCell(principal),
+        _buildDataCell(interest),
+        _buildDataCell(partPayment),
+        _buildDataCell(totalPayment),
+        _buildDataCell(outstanding),
+      ],
     );
   }
 
-  Widget _buildDataCell(String value, Color bgColor) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
-      color: bgColor,
-      child: Center(
-        child: Text(
-          value,
-          style: const TextStyle(
-            fontWeight: FontWeight.normal,
-            fontSize: 14,
-            color: Colors.black,
-            decoration: TextDecoration.none, // Removes any yellow underline
+  TableRow _buildTotalsRow(double totalPrincipal, double totalInterest, double totalPartPayment) {
+    return TableRow(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8.0),
+          color: Colors.teal.shade300,
+          child: const Center(
+            child: Text('Total', style: TextStyle(color: Colors.white)),
           ),
-          textAlign: TextAlign.center,
         ),
-      ),
+        _buildDataCell(totalPrincipal),
+        _buildDataCell(totalInterest),
+        _buildDataCell(totalPartPayment),
+        _buildDataCell(totalPrincipal + totalInterest + totalPartPayment),
+        _buildDataCell(0.0), // Final outstanding should be 0
+      ],
     );
   }
 
-  Widget _buildTotalCell(String value) {
+  Widget _buildDataCell(dynamic value) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
-      color: Colors.grey.shade700,
+      color: Colors.teal.shade50,
       child: Center(
         child: Text(
-          value,
-          style: const TextStyle(
-            fontWeight: FontWeight.normal,
-            fontSize: 14,
-            color: Colors.white,
-            decoration: TextDecoration.none, // Removes any yellow underline
-          ),
-          textAlign: TextAlign.center,
+          value.toStringAsFixed(0),
+          style: const TextStyle(fontSize: 12),
         ),
       ),
     );
   }
 }
+

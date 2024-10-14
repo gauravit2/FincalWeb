@@ -176,10 +176,9 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                               }
                               return null;
                             },
-                            onChanged: (value) {
+                            onSubmited: (value) {
                               setState(() {
-                                _principalInputValue = double.tryParse(value) ??
-                                    0; // Store user input here
+                                _principalInputValue = double.tryParse(value) ?? 0; // Store user input here
                               });
                             },
                           ),
@@ -197,7 +196,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                               }
                               return null;
                             },
-                            onChanged: (value) {
+                            onSubmited: (value) {
                               setState(() {
                                 annualInterestRate =
                                     double.tryParse(value) ?? 0;
@@ -301,25 +300,29 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                   Row(
                     children: [
                       Expanded(
-                        child: Container(
-                          width: 10.w,
-                          height: 7.w,
-                          decoration: BoxDecoration(
-                            color: Colors.teal.shade200,
-                          ),
-                          child: Center(
-                            child: Text(
-                              "Investment Result",
-                              style: TextStyle(
+                        child: Padding(
+                          padding: EdgeInsets.only(right: 50.w),
+                          child: Container(
+                            height: 7.w,
+                            decoration: BoxDecoration(
+                              color: Colors.teal.shade200,
+                            ),
+                            child: Center(
+                              child: Text(
+                                "EMI : ",
+                                style: TextStyle(
                                   fontSize: 2.t,
                                   color: Colors.teal.shade800,
-                                  fontWeight: FontWeight.bold),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ],
                   ),
+
                   SizedBox(height: 5.w),
 
                   Row(
@@ -358,11 +361,11 @@ class _EmiCalculatorState extends State<EmiCalculator> {
 
                       SizedBox(width: 8.w), // Space between pie chart and table
 
-                      // Table section for investment details with updated layout
+                      // Table section for investment details
                       Container(
                         width: 400,
                         height: 145,
-                        padding: EdgeInsets.all(5),
+                        padding: EdgeInsets.all(12),
                         color: Colors.grey.shade100,
                         child: Column(
                           children: [
@@ -379,7 +382,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                                 ),
                                 Text('Principle Amount'),
                                 Spacer(),
-                                Text(tempPrincipalAmount.toString()),
+                                Text(tempPrincipalAmount.toStringAsFixed(0)),
                               ],
                             ),
                             SizedBox(height: 12,),
@@ -461,6 +464,12 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                       ),
                     ],
                   ),
+                  SizedBox(height: 2.h),
+                  PaymentTable(
+                    principleAmount: _principalController.text.isEmpty ? 0.0 : double.parse(_principalController.text.trim()) ,
+                    tenureType: selectedTenure,
+                    tenure: _tenureInputValue.toDouble(),
+                  ),
                 ],
               ),
             ],
@@ -469,13 +478,12 @@ class _EmiCalculatorState extends State<EmiCalculator> {
       ),
     );
   }
-
   // Custom widget for input fields
   Widget _buildInputField({
     required TextEditingController controller,
     required String label,
     required String? Function(String?) validator,
-    required Function(String) onChanged,
+    required Function(String) onSubmited,
   }) {
     return Flexible(
       flex: 1,
@@ -487,7 +495,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
         ),
         keyboardType: TextInputType.number,
         validator: validator,
-        onChanged: onChanged,
+        onFieldSubmitted: onSubmited,
       ),
     );
   }
