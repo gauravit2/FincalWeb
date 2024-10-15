@@ -92,25 +92,29 @@ class _EmiCalculatorState extends State<EmiCalculator> {
     double roiPerMonth = calculateRateOfInterestPerMonth(annualInterestRate);
     double power = calculatePower(roiPerMonth, tenure);
     double emi = calculateEmi(outstanding, roiPerMonth, power);
+    print("emi = $emi principle = $outstanding tenure = $tenure roi = $annualInterestRate");
     totalPayment = emi * tenure;
     totalInterest = totalPayment - outstanding;
 
+    List<PartPayment> loanDetailList = <PartPayment>[];
+
+    DateTime currentDateTime = DateTime.now();
+
     for (int i = 0; i < tenure; i++) {
       double interest = calculateInterest(outstanding, roiPerMonth);
-      double principle = 0;
+      double mPrinciple = 0;
       if (emi < outstanding) {
-        principle = calculatePrinciple(emi, interest);
+        mPrinciple = calculatePrinciple(emi, interest);
       } else {
-        principle = outstanding;
+        mPrinciple = outstanding;
       }
 
       double partPayment = 0.0;//calculatePartPayment(emiCurrMonAndYearCal);
       if (emi > outstanding && partPayment != 0) {
         partPayment = 0;
-        outstanding = outstanding - principle;
+        outstanding = outstanding - mPrinciple;
       } else {
-        print("outstanding = $outstanding partpayment $partPayment");
-        outstanding = calculateOutstanding(outstanding, principle);
+        outstanding = calculateOutstanding(outstanding, mPrinciple);
         if (outstanding < partPayment) {
           partPayment = outstanding;
           outstanding = 0;
@@ -118,23 +122,36 @@ class _EmiCalculatorState extends State<EmiCalculator> {
           outstanding -= partPayment;
       }
 
-      String year = CalenderHelper.getYear(emiCurrMonAndYearCal);
-      String month = CalenderHelper.getMonth(emiCurrMonAndYearCal);
+      PartPayment loanDetail = PartPayment(month: getMonth(currentDateTime), year: getYear(currentDateTime), principal: mPrinciple,
+          interest: interest, partPayment: partPayment,
+          outstanding: outstanding, principleAmount: mPrinciple);
+      loanDetailList.add(loanDetail);
 
-      LoanDetail loanDetail = new LoanDetail();
-      loanDetail.setYear(year);
-      loanDetail.setMonth(month);
-      loanDetail.setPrinciple(Math.round(principle));
-      loanDetail.setInterest(Math.round(interest));
-      loanDetail.setPartpayment(Math.round(partPayment));
-      loanDetail.setOutstanding(Math.round(outstanding));
-      loanDetailArrayList.add(loanDetail);
+
+
+      print("month = "+ loanDetail.month
+          + " year = "+ loanDetail.year.toString()
+          + " principle = "+ loanDetail.principal.toStringAsFixed(0)
+          + " interest = "+ loanDetail.interest.toStringAsFixed(0)
+          + " partPayment = "+ loanDetail.partPayment.toStringAsFixed(0)
+          + " totalPayment = "+ loanDetail.totalPayment.toStringAsFixed(0)
+          + " outstanding = "+ loanDetail.outstanding.toStringAsFixed(0)
+      );
+      currentDateTime = DateTime(currentDateTime.year, currentDateTime.month + 1);
     }
 
-    // print("principle = $out interest = $totalInterest part payment = $partPayment Total Payment = $totalPayment");
+    
     setState(() {
       showResult = true; // Show results after calculation
     });
+  }
+
+  String getMonth(DateTime date){
+    return DateFormat('MMM').format(date);
+  }
+
+  int getYear(DateTime date){
+    return date.year;
   }
 
   double calculatePower(double roiPerMonth, double tenure) {
