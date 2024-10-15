@@ -7,6 +7,8 @@ import 'package:fincalweb_project/view/Calculators/ppf-calculator.dart';
 import 'package:fincalweb_project/view/Calculators/rd-calculator.dart';
 import 'package:fincalweb_project/view/Calculators/scss-calculator.dart';
 import 'package:fincalweb_project/view/Calculators/sip-calculator.dart';
+import 'package:fincalweb_project/view/trial.dart';
+import 'package:fincalweb_project/view/trial.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'helper/get_di.dart' as di;
@@ -39,7 +41,7 @@ class MyApp extends StatelessWidget {
                   colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFF3D48A)),
                   primaryColor: Color(0xFFF3D48A),
                 ),
-               //home: PaymentTable(),
+               //home: EMICalculatorScreen(),
                 initialRoute: '/',
                 routes: {
                   '/': (context) => HomePage(),
@@ -54,6 +56,7 @@ class MyApp extends StatelessWidget {
                   '/scss-calculator':(context) =>ScssCalculator(),
                   '/emi-calculator':(context) =>EmiCalculator(),
                 },
+
                 debugShowCheckedModeBanner: false,
               );
             },

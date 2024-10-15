@@ -107,9 +107,10 @@ class _SipCalculatorState extends State<SipCalculator> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
+
                       _buildInputField(
-                        controller: _amountController,
                         label: "Investment Amount (₹)",
+                        controller: _amountController,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Field is empty';

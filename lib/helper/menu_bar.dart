@@ -1,4 +1,5 @@
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
+import 'package:fincalweb_project/view/Calculators/emi-calculator.dart';
 import 'package:fincalweb_project/view/calculators.dart';
 import 'package:flutter/material.dart';
 import 'package:fincalweb_project/components/menuBar_components/AppName.dart';
@@ -58,10 +59,7 @@ class _CustomMenuBarState extends State<CustomMenuBar> {
                       _buildDropDown(
                         title: 'Loan Calculators',
                         items: {
-                          'EMI Calculator': AllCalculators(
-                            title: 'EMI Calculator',
-                            content: 'EMI Calculator Content',
-                          ),
+                          'EMI Calculator': EmiCalculator()
                         },
                       ),
                       _buildDropDown(
@@ -150,10 +148,7 @@ class _CustomMenuBarState extends State<CustomMenuBar> {
           _buildDrawerItem(
             title: 'Loan Calculators',
             items: {
-              'EMI Calculator': AllCalculators(
-                title: 'EMI Calculator',
-                content: 'EMI Calculator Content',
-              ),
+              'EMI Calculator':EmiCalculator()
             },
           ),
           _buildDrawerItem(
