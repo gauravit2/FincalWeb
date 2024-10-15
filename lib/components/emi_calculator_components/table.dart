@@ -1,8 +1,9 @@
+import 'package:fincalweb_project/controller/part_payment_controller.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:intl/intl.dart';
+import 'package:get/get.dart';
 
-// Model for PartPayment
 class PartPayment {
   final double principleAmount;
   final String month;
@@ -10,8 +11,8 @@ class PartPayment {
   final double principal;
   final double interest;
   final double partPayment;
-  double totalPayment;
   double outstanding;
+  final PartPaymentController controller = Get.find<PartPaymentController>();
 
   PartPayment({
     required this.month,
@@ -21,7 +22,9 @@ class PartPayment {
     required this.partPayment,
     required this.outstanding,
     required this.principleAmount,
-  }) : totalPayment = principal + interest + partPayment;
+  });
+
+  double get totalPayment => principal + interest + partPayment; // Compute on demand
 }
 
 // Function to generate the payment schedule
@@ -49,6 +52,9 @@ List<PartPayment> generatePaymentSchedule(
     } else {
       outstanding -= partPayment;
     }
+
+    // Debugging statement to check values before adding to payment schedule
+    print("Month: $month, Year: $year, Principal: $principalPortion, Interest: $interest, Part Payment: $partPayment, Outstanding: $outstanding");
 
     paymentSchedule.add(
       PartPayment(
@@ -101,11 +107,14 @@ class PaymentTable extends StatefulWidget {
   final String tenureType;
   final double tenure;
 
+
+
   const PaymentTable({
     required this.principleAmount,
     required this.tenureType,
     required this.tenure,
   });
+
 
   @override
   _PaymentTableState createState() => _PaymentTableState();
@@ -228,11 +237,11 @@ class _PaymentTableState extends State<PaymentTable> {
         List<PartPayment> yearPayments = paymentSchedule.where((p) => p.year == year).toList();
         rows.addAll(yearPayments.map((p) => _buildDataRow(
           '  ${p.month}',
-          p.principal.toStringAsFixed(0),
-          p.interest.toStringAsFixed(0),
-          p.partPayment.toStringAsFixed(0),
-          p.totalPayment.toStringAsFixed(0),
-          p.outstanding.toStringAsFixed(0),
+          p.principal,
+          p.interest,
+          p.partPayment,
+          p.totalPayment,
+          p.outstanding,
           Colors.white,
         )));
       }
@@ -258,18 +267,14 @@ class _PaymentTableState extends State<PaymentTable> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    isExpanded ? Icons.remove : Icons.add,
-                    size: 16.0,
-                    color: Colors.black,
+                    isExpanded ? Icons.expand_less : Icons.expand_more,
+                    color: Colors.teal,
                   ),
-                  SizedBox(width: 5.0),
                   Text(
                     year,
                     style: const TextStyle(
-                      fontWeight: FontWeight.normal,
-                      fontSize: 12,
-                      color: Colors.black,
-                      decoration: TextDecoration.none,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ],
@@ -277,58 +282,58 @@ class _PaymentTableState extends State<PaymentTable> {
             ),
           ),
         ),
-        _buildDataCell(principalTotal),
-        _buildDataCell(interestTotal),
-        _buildDataCell(partPaymentTotal),
-        _buildDataCell(principalTotal + interestTotal + partPaymentTotal),
-        _buildDataCell(outstandingTotal),
+        _buildDataCell(principalTotal.toStringAsFixed(0)),
+        _buildDataCell(interestTotal.toStringAsFixed(0)),
+        _buildDataCell(partPaymentTotal.toStringAsFixed(0)),
+        _buildDataCell((principalTotal + interestTotal + partPaymentTotal).toStringAsFixed(0)),
+        _buildDataCell(outstandingTotal.toStringAsFixed(0)),
       ],
     );
   }
 
-  TableRow _buildDataRow(String year, String principal, String interest, String partPayment, String totalPayment, String outstanding, Color bgColor) {
+  TableRow _buildDataRow(String month, double principal, double interest, double partPayment, double totalPayment, double outstanding, Color bgColor) {
     return TableRow(
+      decoration: BoxDecoration(color: bgColor),
       children: [
-        _buildDataCell(year),
-        _buildDataCell(principal),
-        _buildDataCell(interest),
-        _buildDataCell(partPayment),
-        _buildDataCell(totalPayment),
-        _buildDataCell(outstanding),
+        _buildDataCell(month),
+        _buildDataCell(principal.toStringAsFixed(0)),
+        _buildDataCell(interest.toStringAsFixed(0)),
+        _buildDataCell(partPayment.toStringAsFixed(0)),
+        _buildDataCell(totalPayment.toStringAsFixed(0)),
+        _buildDataCell(outstanding.toStringAsFixed(0)),
       ],
     );
   }
 
-  TableRow _buildTotalsRow(double totalPrincipal, double totalInterest, double totalPartPayment) {
-    return TableRow(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8.0),
-          color: Colors.teal.shade300,
-          child: const Center(
-            child: Text('Total', style: TextStyle(color: Colors.white)),
-          ),
-        ),
-        _buildDataCell(totalPrincipal),
-        _buildDataCell(totalInterest),
-        _buildDataCell(totalPartPayment),
-        _buildDataCell(totalPrincipal + totalInterest + totalPartPayment),
-        _buildDataCell(0.0), // Final outstanding should be 0
-      ],
-    );
-  }
-
-  Widget _buildDataCell(dynamic value) {
+  Widget _buildDataCell(String value) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
       color: Colors.teal.shade50,
       child: Center(
         child: Text(
-          value.toStringAsFixed(0),
-          style: const TextStyle(fontSize: 12),
+          value,
+          style: const TextStyle(fontSize: 16),
         ),
       ),
     );
   }
+
+  TableRow _buildTotalsRow(double totalPrincipal, double totalInterest, double totalPartPayment) {
+    return TableRow(
+      decoration: BoxDecoration(color: Colors.teal.shade300),
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Center(child: Text('Totals', style: TextStyle(color: Colors.white))),
+        ),
+        _buildDataCell(totalPrincipal.toStringAsFixed(0)),
+        _buildDataCell(totalInterest.toStringAsFixed(0)),
+        _buildDataCell(totalPartPayment.toStringAsFixed(0)),
+        _buildDataCell((totalPrincipal + totalInterest + totalPartPayment).toStringAsFixed(0)),
+        _buildDataCell('0'),
+      ],
+    );
+  }
 }
+
 
