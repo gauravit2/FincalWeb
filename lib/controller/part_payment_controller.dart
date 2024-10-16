@@ -11,7 +11,7 @@ class PartPaymentController extends GetxController {
   // Define an observable variable to store the part payment amount
   var partPaymentValue = '0'.obs;
   var principleValue = '2000'.obs;
-  var interestRateValue = '8'.obs;
+  var interestRateValue = '7'.obs;
 
 
 

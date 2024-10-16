@@ -28,13 +28,12 @@ class _EmiCalculatorState extends State<EmiCalculator> {
   late TextEditingController _startDateController;
   late TextEditingController _tenureController;
 
-  double tempPrincipalAmount = 1000.0;
-  double annualInterestRate = 8.0;
+  double tempPrincipalAmount = 3000.0;
+  double annualInterestRate = 7.0;
   String selectedTenure = 'Month';
   double emi = 0.0;
   double totalPayment = 0.0;
   double totalInterest = 0.0;
-  double partPayment = 500.0;
   bool showResult = false;
   DateTime? selectedStartDate;
 
@@ -198,8 +197,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                             },
                             onSubmited: (value) {
                               setState(() {
-                                annualInterestRate =
-                                    double.tryParse(value) ?? 0;
+                                annualInterestRate = double.tryParse(value) ?? 0;
                                 calculateEMI(); // Recalculate EMI when the interest rate changes
                               });
                             },
@@ -244,8 +242,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                                 },
                                 onChanged: (value) {
                                   setState(() {
-                                    _tenureInputValue =
-                                        int.tryParse(value) ?? 1;
+                                    _tenureInputValue = int.tryParse(value) ?? 1;
                                     calculateEMI(); // Recalculate EMI when the tenure changes
                                   });
                                 },
@@ -279,11 +276,10 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                         onPressed: () {
                           if (_formKey.currentState?.validate() ?? false) {
                             setState(() {
-                              // Update tempPrincipalAmount with the new input
-                              tempPrincipalAmount =
-                                  double.tryParse(_principalController.text) ??
-                                      0.0;
-                              calculateEMI(); // Recalculate EMI with the updated principal amount
+                              // Update tempPrincipalAmount, interest with the new input
+                              tempPrincipalAmount = double.tryParse(_principalController.text) ?? 0.0;
+                              annualInterestRate  = double.tryParse(_interestRateController.text) ?? 0.0;
+                              calculateEMI(); // Recalculate EMI with the updated principal amount & interest rate
                               showResult =
                               true; // Show results after calculation
                             });
@@ -475,7 +471,8 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                           ),
                           SizedBox(height: 2.h),
                           PaymentTable(
-                            principleAmount: _principalController.text.isEmpty ? 0.0 : double.parse(_principalController.text.trim()),
+                           // principleAmount: _principalController.text.isEmpty ? 0.0 : double.parse(_principalController.text.trim()),
+                            principleAmount: tempPrincipalAmount,
                             tenureType: selectedTenure,
                             tenure: _tenureInputValue.toDouble(),
                           ),
