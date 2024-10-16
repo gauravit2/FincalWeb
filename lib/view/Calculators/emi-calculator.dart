@@ -31,7 +31,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
   double tempPrincipalAmount = 3000.0;
   double annualInterestRate = 7.0;
   String selectedTenure = 'Month';
-  double emi = 0.0;
+  // double emi = 0.0;
   double totalPayment = 0.0;
   double totalInterest = 0.0;
   bool showResult = false;
@@ -66,33 +66,123 @@ class _EmiCalculatorState extends State<EmiCalculator> {
 
   void calculateEMI() {
     // Parse the principal amount from the controller's text
-    double principalAmount =
+    double outstanding =
         double.tryParse(_principalController.text) ?? tempPrincipalAmount;
 
-    int tenure;
+    double tenure;
     if (selectedTenure == 'Month') {
-      tenure = _tenureInputValue;
+      tenure = _tenureInputValue.toDouble();
     } else {
       tenure = _tenureInputValue * 12;
     }
 
-    double monthlyInterestRate =
-    calculateMonthlyInterestRate(annualInterestRate);
-    emi = (principalAmount *
-        monthlyInterestRate *
-        pow(1 + monthlyInterestRate, tenure)) /
-        (pow(1 + monthlyInterestRate, tenure) - 1);
-    totalPayment = emi * tenure;
-    totalInterest = totalPayment - principalAmount;
+    // double monthlyInterestRate =
+    // calculateMonthlyInterestRate(annualInterestRate);
+    // emi = (principalAmount *
+    //     monthlyInterestRate *
+    //     pow(1 + monthlyInterestRate, tenure)) /
+    //     (pow(1 + monthlyInterestRate, tenure) - 1);
+    // double roiPerMonth = calculateMonthlyInterestRate(annualInterestRate);
+    // double emi = (principalAmount *
+    //     roiPerMonth *
+    //         pow(1 + roiPerMonth, tenure)) /
+    //     (pow(1 + roiPerMonth, tenure) - 1);
+
+    double roiPerMonth = calculateRateOfInterestPerMonth(annualInterestRate);
+    double power = calculatePower(roiPerMonth, tenure);
+    double emi = calculateEmi(outstanding, roiPerMonth, power);
+    print("emi = $emi principle = $outstanding tenure = $tenure roi = $annualInterestRate");
+    totalPayment = 0;
+    totalInterest = 0;
+
+    List<PartPayment> loanDetailList = <PartPayment>[];
+
+    DateTime currentDateTime = DateTime.now();
+
+    for (int i = 0; i < tenure; i++) {
+      double interest = calculateInterest(outstanding, roiPerMonth);
+      double mPrinciple = 0;
+      if (emi < outstanding) {
+        mPrinciple = calculatePrinciple(emi, interest);
+      } else {
+        mPrinciple = outstanding;
+      }
+
+      double partPayment = 0.0;//calculatePartPayment(emiCurrMonAndYearCal);
+      if (emi > outstanding && partPayment != 0) {
+        partPayment = 0;
+        outstanding = outstanding - mPrinciple;
+      } else {
+        outstanding = calculateOutstanding(outstanding, mPrinciple);
+        if (outstanding < partPayment) {
+          partPayment = outstanding;
+          outstanding = 0;
+        } else
+          outstanding -= partPayment;
+      }
+      PartPayment loanDetail = PartPayment(month: getMonth(currentDateTime), year: getYear(currentDateTime), principal: mPrinciple,
+          interest: interest, partPayment: partPayment,
+          outstanding: outstanding, principleAmount: mPrinciple);
+      loanDetailList.add(loanDetail);
+
+      print("month = "+ loanDetail.month
+          + " year = "+ loanDetail.year.toString()
+          + " principle = "+ loanDetail.principal.toStringAsFixed(0)
+          + " interest = "+ loanDetail.interest.toStringAsFixed(0)
+          + " partPayment = "+ loanDetail.partPayment.toStringAsFixed(0)
+          + " totalPayment = "+ loanDetail.totalPayment.toStringAsFixed(0)
+          + " outstanding = "+ loanDetail.outstanding.toStringAsFixed(0)
+      );
+      currentDateTime = DateTime(currentDateTime.year, currentDateTime.month + 1);
+
+      totalInterest = totalInterest + loanDetail.interest.toPrecision(0);
+      totalPayment = totalPayment + loanDetail.totalPayment;
+    }
+    print("totalInterest = $totalInterest totalPayment = $totalPayment");
+
 
     setState(() {
       showResult = true; // Show results after calculation
     });
   }
 
+  String getMonth(DateTime date){
+    return DateFormat('MMM').format(date);
+  }
+
+  int getYear(DateTime date){
+    return date.year;
+  }
+
+  double calculatePower(double roiPerMonth, double tenure) {
+    double power = pow(1 + roiPerMonth, tenure).toDouble();
+    print("power = $power");
+    return power;
+  }
+
+  double calculateEmi(double outstanding, double roiPerMonth, double power) {
+    return (outstanding * roiPerMonth * power) / (power - 1);
+  }
+
   double calculateMonthlyInterestRate(double rateOfInterest) {
     return rateOfInterest / (12 * 100);
   }
+
+  double calculateRateOfInterestPerMonth(double rateOfInterest) {
+    return (rateOfInterest / 12) / 100;
+  }
+
+  double calculateInterest(double outstanding, double roiPerMonth) {
+    return outstanding * roiPerMonth;
+  }
+  double calculatePrinciple(double emi, double interest) {
+    return emi - interest;
+  }
+
+  double calculateOutstanding(double outstanding, double principle) {
+    return outstanding - principle;
+  }
+
 
   Future<void> _selectDate(BuildContext context) async {
     DateTime? pickedDate = await showDatePicker(

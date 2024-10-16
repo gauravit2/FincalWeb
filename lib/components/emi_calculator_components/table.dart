@@ -25,7 +25,7 @@ class PartPayment {
   });
 
   double get totalPayment =>
-      principal + interest + partPayment; // Compute on demand
+      principal.toPrecision(0) + interest.toPrecision(0) + partPayment.toPrecision(0); // Compute on demand
 }
 
 late TextEditingController _principalController;
@@ -143,11 +143,11 @@ class _PaymentTableState extends State<PaymentTable> {
     for (PartPayment payment in paymentSchedule) {
       int year = payment.year;
       totalPrincipalMap[year] =
-          (totalPrincipalMap[year] ?? 0) + payment.principal;
-      totalInterestMap[year] = (totalInterestMap[year] ?? 0) + payment.interest;
+          (totalPrincipalMap[year] ?? 0) + num.parse(payment.principal.toStringAsFixed(0));
+      totalInterestMap[year] = (totalInterestMap[year] ?? 0) + num.parse(payment.interest.toStringAsFixed(0));
       totalPartPaymentMap[year] =
           (totalPartPaymentMap[year] ?? 0) + payment.partPayment;
-      totalOutstandingMap[year] = payment.outstanding;
+      totalOutstandingMap[year] = num.parse(payment.outstanding.toStringAsFixed(0)).toDouble();
       yearExpandedMap[year] = false;
     }
 
@@ -410,10 +410,10 @@ class _PaymentTableState extends State<PaymentTable> {
       PartPayment payment = PartPayment(
         month: currentMonth,
         year: currentYear,
-        principal: principal,
-        interest: interest,
+        principal: principal.toPrecision(0),
+        interest: interest.toPrecision(0),
         partPayment: partPayment,
-        outstanding: outstanding,
+        outstanding: outstanding.toPrecision(0),
         principleAmount: principalAmount,
       );
 
