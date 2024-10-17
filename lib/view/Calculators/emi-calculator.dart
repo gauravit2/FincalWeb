@@ -75,7 +75,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
     print("emi = $emi principle = $outstanding tenure = $tenure roi = $annualInterestRate");
     totalPayment = 0;
     totalInterest = 0;
-    List<PartPayment> loanDetailList = <PartPayment>[];
+    List<LoanDetail> loanDetailList = <LoanDetail>[];
     DateTime currentDateTime = DateTime.now();
     for (int i = 0; i < tenure; i++) {
       double interest = calculateInterest(outstanding, roiPerMonth);
@@ -97,7 +97,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
         } else
           outstanding -= partPayment;
       }
-      PartPayment loanDetail = PartPayment(month: getMonth(currentDateTime), year: getYear(currentDateTime), principal: mPrinciple,
+      LoanDetail loanDetail = LoanDetail(month: getMonth(currentDateTime), year: getYear(currentDateTime), principal: mPrinciple,
           interest: interest,
           partPayment: partPayment,
           outstanding: outstanding,

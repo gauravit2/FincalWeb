@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:intl/intl.dart';
 import 'package:get/get.dart';
 
-class PartPayment {
+class LoanDetail {
   final double principleAmount;
   final String month;
   final int year;
@@ -14,7 +14,7 @@ class PartPayment {
   double outstanding;
   final PartPaymentController controller = Get.find<PartPaymentController>();
 
-  PartPayment({
+  LoanDetail({
     required this.month,
     required this.year,
     required this.principal,
@@ -68,8 +68,8 @@ double calculateOutstanding(double outstanding, double principle) {
 }
 
 double calculatePartPayment(
-    int month, int year, List<PartPayment> partPayments) {
-  for (PartPayment payment in partPayments) {
+    int month, int year, List<LoanDetail> partPayments) {
+  for (LoanDetail payment in partPayments) {
     if (int.parse(payment.month) == month && payment.year == year) {
       return payment.partPayment;
     }
@@ -94,7 +94,7 @@ class PaymentTable extends StatefulWidget {
 
 class _PaymentTableState extends State<PaymentTable> {
   Map<int, bool> yearExpandedMap = {};
-  List<PartPayment> paymentSchedule = [];
+  List<LoanDetail> paymentSchedule = [];
   Map<int, double> totalPrincipalMap = {};
   Map<int, double> totalInterestMap = {};
   Map<int, double> totalPartPaymentMap = {};
@@ -112,7 +112,7 @@ class _PaymentTableState extends State<PaymentTable> {
       [], // Empty part payment list for simplicity
     );
 
-    for (PartPayment payment in paymentSchedule) {
+    for (LoanDetail payment in paymentSchedule) {
       int year = payment.year;
       totalPrincipalMap[year] =
           (totalPrincipalMap[year] ?? 0) + num.parse(payment.principal.toStringAsFixed(0));
@@ -217,7 +217,7 @@ class _PaymentTableState extends State<PaymentTable> {
       );
 
       if (yearExpandedMap[year]!) {
-        List<PartPayment> yearPayments =
+        List<LoanDetail> yearPayments =
             paymentSchedule.where((p) => p.year == year).toList();
         rows.addAll(yearPayments.map((p) => _buildDataRow(
               '  ${p.month}',
@@ -317,12 +317,12 @@ class _PaymentTableState extends State<PaymentTable> {
     );
   }
 
-  List<PartPayment> generatePaymentSchedule(
+  List<LoanDetail> generatePaymentSchedule(
       double principalAmount,
       double annualInterestRate,
       double tenureInMonths,
-      List<PartPayment> partPayments) {
-    List<PartPayment> paymentSchedule = [];
+      List<LoanDetail> partPayments) {
+    List<LoanDetail> paymentSchedule = [];
     double outstanding = principalAmount;
 
     // Calculate EMI
@@ -353,7 +353,7 @@ class _PaymentTableState extends State<PaymentTable> {
       int currentYear = currentDate.year;
 
       // Create a new PartPayment entry for this month
-      PartPayment payment = PartPayment(
+      LoanDetail payment = LoanDetail(
         month: currentMonth,
         year: currentYear,
         principal: principal.toPrecision(0),
