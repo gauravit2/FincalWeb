@@ -129,7 +129,7 @@ class _PaymentTableState extends State<PaymentTable> {
   Widget build(BuildContext context) {
     double totalPrincipal = loanDetailList.fold(0.0, (sum, item) => sum + item.principal.toPrecision(0));
     double totalInterest = loanDetailList.fold(0.0, (sum, item) => sum + item.interest.toPrecision(0));
-    double totalPartPayment = loanDetailList.fold(0.0, (sum, item) => sum + item.partPayment);
+    double totalPartPayment = loanDetailList.fold(0.0, (sum, item) => sum + item.partPayment.toPrecision(0));
 
     return SingleChildScrollView(
       child: Container(

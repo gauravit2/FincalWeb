@@ -77,7 +77,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
     totalPayment = 0;
     totalInterest = 0;
     loanDetailList.clear();
-    DateTime currentDateTime = DateTime.now();
+    DateTime currentDateTime = selectedStartDate!;
     for (int i = 0; i < tenure; i++) {
       double interest = calculateInterest(outstanding, roiPerMonth);
       double mPrinciple = 0;
@@ -86,7 +86,8 @@ class _EmiCalculatorState extends State<EmiCalculator> {
       } else {
         mPrinciple = outstanding;
       }
-      double partPayment = 0.0;//calculatePartPayment(emiCurrMonAndYearCal);
+       double partPayment = 0.0;
+      //double partPayment = calculatePartPayment(currentDateTime);
       if (emi > outstanding && partPayment != 0) {
         partPayment = 0;
         outstanding = outstanding - mPrinciple;
@@ -154,6 +155,12 @@ class _EmiCalculatorState extends State<EmiCalculator> {
     return outstanding - principle;
   }
 
+  double calculatePartPayment(DateTime currEmiDateTime) {
+
+
+
+    return 0.0; // Ensure this is a double
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     DateTime? pickedDate = await showDatePicker(
@@ -277,7 +284,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                           Flexible(
                             flex: 1,
                             child: Container(
-                              width: 54.w, 
+                              width: 54.w,
                               child: TextFormField(
                                 controller: _tenureController,
                                 decoration: InputDecoration(
