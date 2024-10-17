@@ -34,6 +34,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
   double emi = 0.0;
   double totalPayment = 0.0;
   double totalInterest = 0.0;
+  double totalPrinciple = 0.0;
   bool showResult = false;
   DateTime? selectedStartDate;
 
@@ -111,10 +112,11 @@ class _EmiCalculatorState extends State<EmiCalculator> {
           + " outstanding = "+ loanDetail.outstanding.toStringAsFixed(0)
       );
       currentDateTime = DateTime(currentDateTime.year, currentDateTime.month + 1);
+      totalPrinciple = totalPrinciple + loanDetail.principal.toPrecision(0);
       totalInterest = totalInterest + loanDetail.interest.toPrecision(0);
       totalPayment = totalPayment + loanDetail.totalPayment;
     }
-    print("totalInterest = $totalInterest totalPayment = $totalPayment");
+    print("totalPrinciple = $totalPrinciple totalInterest = $totalInterest totalPayment = $totalPayment");
 
     setState(() {
       showResult = true; // Show results after calculation
@@ -390,7 +392,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                                       PieChartSectionData(
                                         color: Colors.green,
                                         value:
-                                        tempPrincipalAmount, // Principal Amount
+                                        totalPrinciple, // Principal Amount
                                         title: '', // No titles in the slices
                                         radius: 35,
                                       ),
@@ -438,7 +440,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                                         ),
                                         Text('Principle Amount'),
                                         Spacer(),
-                                        Text(tempPrincipalAmount.toStringAsFixed(0)),
+                                        Text(totalPrinciple.toString()),
                                       ],
                                     ),
                                     SizedBox(
@@ -457,7 +459,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                                         ),
                                         Text('Interest Rate'),
                                         Spacer(),
-                                        Text(totalInterest.toStringAsFixed(0)),
+                                        Text(totalInterest.toString()),
                                       ],
                                     ),
                                     SizedBox(
@@ -496,7 +498,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                                         ),
                                         Text('Total Amount'),
                                         Spacer(),
-                                        Text(totalPayment.toStringAsFixed(0)),
+                                        Text(totalPayment.toString()),
                                       ],
                                     ),
                                     // Increase distance between the table and ad
