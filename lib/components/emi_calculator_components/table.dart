@@ -33,39 +33,39 @@ final List<String> tenureOptions = ['Month', 'Year'];
 
 var value;
 
-String getMonth(DateTime date) {
-  return DateFormat('MMM').format(date);
-}
+// String getMonth(DateTime date) {
+//   return DateFormat('MMM').format(date);
+// }
 
-int getYear(DateTime date) {
-  return date.year;
-}
+// int getYear(DateTime date) {
+//   return date.year;
+// }
 
-double calculatePower(double roiPerMonth, double tenure) {
-  double power = pow(1 + roiPerMonth, tenure).toDouble();
-  print("power = $power");
-  return power;
-}
+// double calculatePower(double roiPerMonth, double tenure) {
+//   double power = pow(1 + roiPerMonth, tenure).toDouble();
+//   print("power = $power");
+//   return power;
+// }
 
-double calculateEmi(double outstanding, double roiPerMonth, double power) {
-  return (outstanding * roiPerMonth * power) / (power - 1);
-}
+// double calculateEmi(double outstanding, double roiPerMonth, double power) {
+//   return (outstanding * roiPerMonth * power) / (power - 1);
+// }
 
-double calculateRateOfInterestPerMonth(double rateOfInterest) {
-  return (rateOfInterest / 12) / 100;
-}
+// double calculateRateOfInterestPerMonth(double rateOfInterest) {
+//   return (rateOfInterest / 12) / 100;
+// }
 
-double calculateInterest(double outstanding, double roiPerMonth) {
-  return outstanding * roiPerMonth;
-}
+// double calculateInterest(double outstanding, double roiPerMonth) {
+//   return outstanding * roiPerMonth;
+// }
 
-double calculatePrinciple(double emi, double interest) {
-  return emi - interest;
-}
-
-double calculateOutstanding(double outstanding, double principle) {
-  return outstanding - principle;
-}
+// double calculatePrinciple(double emi, double interest) {
+//   return emi - interest;
+// }
+//
+// double calculateOutstanding(double outstanding, double principle) {
+//   return outstanding - principle;
+// }
 
 double calculatePartPayment(
     int month, int year, List<LoanDetail> partPayments) {
