@@ -24,26 +24,10 @@ class PartPayment {
     required this.principleAmount,
   });
 
-  double get totalPayment =>
-      principal + interest + partPayment; // Compute on demand
+  double get totalPayment => principal.toPrecision(0) + interest.toPrecision(0) + partPayment.toPrecision(0); // Compute on demand
 }
-
-late TextEditingController _principalController;
-late TextEditingController _interestRateController;
-late TextEditingController _startDateController;
-late TextEditingController _tenureController;
-
-double tempPrincipalAmount = 2000.0;
-double annualInterestRate = 8.0;
-String selectedTenure = 'Month';
-double totalPayment = 0.0;
-double totalInterest = 0.0;
-double partPayment = 0.0;
 bool showResult = false;
 DateTime? selectedStartDate;
-
-double _principalInputValue = 2000.0;
-int _tenureInputValue = 10;
 
 final List<String> tenureOptions = ['Month', 'Year'];
 
@@ -121,18 +105,6 @@ class _PaymentTableState extends State<PaymentTable> {
     super.initState();
     double tenureInMonths =
         widget.tenureType == "years" ? widget.tenure * 12 : widget.tenure;
-
-    _principalController =
-        TextEditingController(text: tempPrincipalAmount.toString());
-    _interestRateController =
-        TextEditingController(text: annualInterestRate.toString());
-    selectedStartDate = DateTime.now();
-    _startDateController = TextEditingController(
-      text: DateFormat('dd/MM/yyyy').format(selectedStartDate!),
-    );
-    _tenureController =
-        TextEditingController(text: _tenureInputValue.toString());
-
     paymentSchedule = generatePaymentSchedule(
       widget.principleAmount,
       7.0, // Annual Interest Rate
@@ -143,38 +115,14 @@ class _PaymentTableState extends State<PaymentTable> {
     for (PartPayment payment in paymentSchedule) {
       int year = payment.year;
       totalPrincipalMap[year] =
-          (totalPrincipalMap[year] ?? 0) + payment.principal;
-      totalInterestMap[year] = (totalInterestMap[year] ?? 0) + payment.interest;
-      totalPartPaymentMap[year] =
-          (totalPartPaymentMap[year] ?? 0) + payment.partPayment;
-      totalOutstandingMap[year] = payment.outstanding;
+          (totalPrincipalMap[year] ?? 0) + num.parse(payment.principal.toStringAsFixed(0));
+      totalInterestMap[year] =
+          (totalInterestMap[year] ?? 0) + num.parse(payment.interest.toStringAsFixed(0));
+      totalPartPaymentMap[year] = (totalPartPaymentMap[year] ?? 0) + payment.partPayment;
+      totalOutstandingMap[year] = num.parse(payment.outstanding.toStringAsFixed(0)).toDouble();
       yearExpandedMap[year] = false;
     }
-
-    calculateEMI();
   }
-
-  void calculateEMI() {
-    double outstanding =
-        double.tryParse(_principalController.text) ?? tempPrincipalAmount;
-    double tenure = (selectedTenure == 'Month')
-        ? _tenureInputValue.toDouble()
-        : _tenureInputValue * 12;
-    double roiPerMonth = calculateRateOfInterestPerMonth(annualInterestRate);
-    double power = calculatePower(roiPerMonth, tenure);
-    double emi = calculateEmi(outstanding, roiPerMonth, power);
-
-    print(
-        "emi = $emi principle = $outstanding tenure = $tenure roi = $annualInterestRate");
-
-    totalPayment = emi * tenure;
-    totalInterest = totalPayment - outstanding;
-
-    setState(() {
-      showResult = true; // Show results after calculation
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     double totalPrincipal =
@@ -183,8 +131,6 @@ class _PaymentTableState extends State<PaymentTable> {
         paymentSchedule.fold(0.0, (sum, item) => sum + item.interest);
     double totalPartPayment =
         paymentSchedule.fold(0.0, (sum, item) => sum + item.partPayment);
-    double totalOutstanding =
-        paymentSchedule.isNotEmpty ? paymentSchedule.last.outstanding : 0.0;
 
     return SingleChildScrollView(
       child: Container(
@@ -410,10 +356,10 @@ class _PaymentTableState extends State<PaymentTable> {
       PartPayment payment = PartPayment(
         month: currentMonth,
         year: currentYear,
-        principal: principal,
-        interest: interest,
+        principal: principal.toPrecision(0),
+        interest: interest.toPrecision(0),
         partPayment: partPayment,
-        outstanding: outstanding,
+        outstanding: outstanding.toPrecision(0),
         principleAmount: principalAmount,
       );
 

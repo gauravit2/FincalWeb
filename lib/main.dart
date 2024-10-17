@@ -7,18 +7,12 @@ import 'package:fincalweb_project/view/Calculators/ppf-calculator.dart';
 import 'package:fincalweb_project/view/Calculators/rd-calculator.dart';
 import 'package:fincalweb_project/view/Calculators/scss-calculator.dart';
 import 'package:fincalweb_project/view/Calculators/sip-calculator.dart';
-import 'package:fincalweb_project/view/trial.dart';
-import 'package:fincalweb_project/view/trial.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'helper/get_di.dart' as di;
 import 'helper/size_config.dart';
 import 'package:fincalweb_project/view/HomePage.dart';
 import 'package:fincalweb_project/view//calculators.dart';
-import 'package:fincalweb_project/components/emi_calculator_components/partpayment_table.dart';
-import 'package:fincalweb_project/components/emi_calculator_components/table.dart';
-
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

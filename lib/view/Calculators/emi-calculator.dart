@@ -28,7 +28,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
   late TextEditingController _startDateController;
   late TextEditingController _tenureController;
 
-  double tempPrincipalAmount = 3000.0;
+  double tempPrincipalAmount = 5000.0;
   double annualInterestRate = 7.0;
   String selectedTenure = 'Month';
   double emi = 0.0;
@@ -66,33 +66,91 @@ class _EmiCalculatorState extends State<EmiCalculator> {
 
   void calculateEMI() {
     // Parse the principal amount from the controller's text
-    double principalAmount =
-        double.tryParse(_principalController.text) ?? tempPrincipalAmount;
-
-    int tenure;
-    if (selectedTenure == 'Month') {
-      tenure = _tenureInputValue;
-    } else {
-      tenure = _tenureInputValue * 12;
+    double outstanding = double.tryParse(_principalController.text) ?? tempPrincipalAmount;
+    double tenure = (selectedTenure == 'Month') ? _tenureInputValue.toDouble() : _tenureInputValue * 12;
+    double roiPerMonth = calculateRateOfInterestPerMonth(annualInterestRate);
+    double power = calculatePower(roiPerMonth, tenure);
+    double emi = calculateEmi(outstanding, roiPerMonth, power);
+    print("emi = $emi principle = $outstanding tenure = $tenure roi = $annualInterestRate");
+    totalPayment = 0;
+    totalInterest = 0;
+    List<PartPayment> loanDetailList = <PartPayment>[];
+    DateTime currentDateTime = DateTime.now();
+    for (int i = 0; i < tenure; i++) {
+      double interest = calculateInterest(outstanding, roiPerMonth);
+      double mPrinciple = 0;
+      if (emi < outstanding) {
+        mPrinciple = calculatePrinciple(emi, interest);
+      } else {
+        mPrinciple = outstanding;
+      }
+      double partPayment = 0.0;//calculatePartPayment(emiCurrMonAndYearCal);
+      if (emi > outstanding && partPayment != 0) {
+        partPayment = 0;
+        outstanding = outstanding - mPrinciple;
+      } else {
+        outstanding = calculateOutstanding(outstanding, mPrinciple);
+        if (outstanding < partPayment) {
+          partPayment = outstanding;
+          outstanding = 0;
+        } else
+          outstanding -= partPayment;
+      }
+      PartPayment loanDetail = PartPayment(month: getMonth(currentDateTime), year: getYear(currentDateTime), principal: mPrinciple,
+          interest: interest,
+          partPayment: partPayment,
+          outstanding: outstanding,
+          principleAmount: mPrinciple);
+      loanDetailList.add(loanDetail);
+      print("month = "+ loanDetail.month
+          + " year = "+ loanDetail.year.toString()
+          + " principle = "+ loanDetail.principal.toStringAsFixed(0)
+          + " interest = "+ loanDetail.interest.toStringAsFixed(0)
+          + " partPayment = "+ loanDetail.partPayment.toStringAsFixed(0)
+          + " totalPayment = "+ loanDetail.totalPayment.toStringAsFixed(0)
+          + " outstanding = "+ loanDetail.outstanding.toStringAsFixed(0)
+      );
+      currentDateTime = DateTime(currentDateTime.year, currentDateTime.month + 1);
+      totalInterest = totalInterest + loanDetail.interest.toPrecision(0);
+      totalPayment = totalPayment + loanDetail.totalPayment;
     }
-
-    double monthlyInterestRate =
-    calculateMonthlyInterestRate(annualInterestRate);
-    emi = (principalAmount *
-        monthlyInterestRate *
-        pow(1 + monthlyInterestRate, tenure)) /
-        (pow(1 + monthlyInterestRate, tenure) - 1);
-    totalPayment = emi * tenure;
-    totalInterest = totalPayment - principalAmount;
+    print("totalInterest = $totalInterest totalPayment = $totalPayment");
 
     setState(() {
       showResult = true; // Show results after calculation
     });
   }
+  String getMonth(DateTime date){
+    return DateFormat('MMM').format(date);
+  }
+  int getYear(DateTime date){
+    return date.year;
+  }
+  double calculatePower(double roiPerMonth, double tenure) {
+    double power = pow(1 + roiPerMonth, tenure).toDouble();
+    print("power = $power");
+    return power;
+  }
+  double calculateEmi(double outstanding, double roiPerMonth, double power) {
+    return (outstanding * roiPerMonth * power) / (power - 1);
+  }
 
   double calculateMonthlyInterestRate(double rateOfInterest) {
     return rateOfInterest / (12 * 100);
   }
+  double calculateRateOfInterestPerMonth(double rateOfInterest) {
+    return (rateOfInterest / 12) / 100;
+  }
+  double calculateInterest(double outstanding, double roiPerMonth) {
+    return outstanding * roiPerMonth;
+  }
+  double calculatePrinciple(double emi, double interest) {
+    return emi - interest;
+  }
+  double calculateOutstanding(double outstanding, double principle) {
+    return outstanding - principle;
+  }
+
 
   Future<void> _selectDate(BuildContext context) async {
     DateTime? pickedDate = await showDatePicker(
@@ -216,8 +274,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                           Flexible(
                             flex: 1,
                             child: Container(
-                              width: 54
-                                  .w, // Set the width to minimize the input field
+                              width: 54.w, 
                               child: TextFormField(
                                 controller: _tenureController,
                                 decoration: InputDecoration(
@@ -236,8 +293,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                                   if (tenureValue == null || tenureValue <= 0) {
                                     return 'Enter a valid tenure';
                                   }
-                                  _tenureInputValue =
-                                      tenureValue; // Update the tenure value
+                                  _tenureInputValue = tenureValue; // Update the tenure value
                                   return null;
                                 },
                                 onChanged: (value) {
@@ -280,8 +336,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                               tempPrincipalAmount = double.tryParse(_principalController.text) ?? 0.0;
                               annualInterestRate  = double.tryParse(_interestRateController.text) ?? 0.0;
                               calculateEMI(); // Recalculate EMI with the updated principal amount & interest rate
-                              showResult =
-                              true; // Show results after calculation
+                              showResult = true; // Show results after calculation
                             });
                           }
                         },
@@ -304,7 +359,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                                     ),
                                     child: Center(
                                       child: Text(
-                                        "EMI : ",
+                                        "EMI : ₹ ${emi.toStringAsFixed(0)}",  // Add the value of calculateEMI()
                                         style: TextStyle(
                                           fontSize: 2.t,
                                           color: Colors.teal.shade800,
@@ -312,6 +367,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                                         ),
                                       ),
                                     ),
+
                                   ),
                                 ),
                               ),
