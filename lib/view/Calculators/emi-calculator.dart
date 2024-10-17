@@ -42,7 +42,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
   int _tenureInputValue = 10;
 
   final List<String> tenureOptions = ['Month', 'Year'];
-
+  List<LoanDetail> loanDetailList = <LoanDetail>[];
   var value;
 
   @override
@@ -73,9 +73,10 @@ class _EmiCalculatorState extends State<EmiCalculator> {
     double power = calculatePower(roiPerMonth, tenure);
     double emi = calculateEmi(outstanding, roiPerMonth, power);
     print("emi = $emi principle = $outstanding tenure = $tenure roi = $annualInterestRate");
+    totalPrinciple = 0;
     totalPayment = 0;
     totalInterest = 0;
-    List<LoanDetail> loanDetailList = <LoanDetail>[];
+    loanDetailList.clear();
     DateTime currentDateTime = DateTime.now();
     for (int i = 0; i < tenure; i++) {
       double interest = calculateInterest(outstanding, roiPerMonth);
@@ -530,9 +531,10 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                           SizedBox(height: 2.h),
                           PaymentTable(
                            // principleAmount: _principalController.text.isEmpty ? 0.0 : double.parse(_principalController.text.trim()),
-                            principleAmount: tempPrincipalAmount,
-                            tenureType: selectedTenure,
-                            tenure: _tenureInputValue.toDouble(),
+                            loanDetailList: loanDetailList,
+                            // principleAmount: tempPrincipalAmount,
+                            // tenureType: selectedTenure,
+                            // tenure: _tenureInputValue.toDouble(),
                           ),
                         ],
                       ),

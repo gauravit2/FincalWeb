@@ -78,14 +78,16 @@ double calculatePartPayment(
 }
 
 class PaymentTable extends StatefulWidget {
-  final double principleAmount;
-  final String tenureType;
-  final double tenure;
+  // final double principleAmount;
+  // final String tenureType;
+  // final double tenure;
+  final List<LoanDetail> loanDetailList;
 
   const PaymentTable({
-    required this.principleAmount,
-    required this.tenureType,
-    required this.tenure,
+    required this.loanDetailList,
+    // required this.principleAmount,
+    // required this.tenureType,
+    // required this.tenure,
   });
 
   @override
@@ -94,7 +96,7 @@ class PaymentTable extends StatefulWidget {
 
 class _PaymentTableState extends State<PaymentTable> {
   Map<int, bool> yearExpandedMap = {};
-  List<LoanDetail> paymentSchedule = [];
+  List<LoanDetail> loanDetailList = [];
   Map<int, double> totalPrincipalMap = {};
   Map<int, double> totalInterestMap = {};
   Map<int, double> totalPartPaymentMap = {};
@@ -103,34 +105,31 @@ class _PaymentTableState extends State<PaymentTable> {
   @override
   void initState() {
     super.initState();
-    double tenureInMonths =
-        widget.tenureType == "years" ? widget.tenure * 12 : widget.tenure;
-    paymentSchedule = generatePaymentSchedule(
-      widget.principleAmount,
-      7.0, // Annual Interest Rate
-      tenureInMonths,
-      [], // Empty part payment list for simplicity
-    );
+    // double tenureInMonths =
+        // widget.tenureType == "years" ? widget.tenure * 12 : widget.tenure;
+    // paymentSchedule = generatePaymentSchedule(
+    //   widget.principleAmount,
+    //   7.0, // Annual Interest Rate
+    //   tenureInMonths,
+    //   [], // Empty part payment list for simplicity
+    // );
 
-    for (LoanDetail payment in paymentSchedule) {
-      int year = payment.year;
-      totalPrincipalMap[year] =
-          (totalPrincipalMap[year] ?? 0) + num.parse(payment.principal.toStringAsFixed(0));
-      totalInterestMap[year] =
-          (totalInterestMap[year] ?? 0) + num.parse(payment.interest.toStringAsFixed(0));
-      totalPartPaymentMap[year] = (totalPartPaymentMap[year] ?? 0) + payment.partPayment;
-      totalOutstandingMap[year] = num.parse(payment.outstanding.toStringAsFixed(0)).toDouble();
+    loanDetailList = widget.loanDetailList;
+
+    for (LoanDetail loanDetail in widget.loanDetailList) {
+      int year = loanDetail.year;
+      totalPrincipalMap[year] = (totalPrincipalMap[year] ?? 0) + loanDetail.principal.toPrecision(0);
+      totalInterestMap[year] = (totalInterestMap[year] ?? 0) + loanDetail.interest.toPrecision(0);
+      totalPartPaymentMap[year] = (totalPartPaymentMap[year] ?? 0) + loanDetail.partPayment.toPrecision(0);
+      totalOutstandingMap[year] = loanDetail.outstanding.toPrecision(0).toDouble();
       yearExpandedMap[year] = false;
     }
   }
   @override
   Widget build(BuildContext context) {
-    double totalPrincipal =
-        paymentSchedule.fold(0.0, (sum, item) => sum + item.principal);
-    double totalInterest =
-        paymentSchedule.fold(0.0, (sum, item) => sum + item.interest);
-    double totalPartPayment =
-        paymentSchedule.fold(0.0, (sum, item) => sum + item.partPayment);
+    double totalPrincipal = loanDetailList.fold(0.0, (sum, item) => sum + item.principal.toPrecision(0));
+    double totalInterest = loanDetailList.fold(0.0, (sum, item) => sum + item.interest.toPrecision(0));
+    double totalPartPayment = loanDetailList.fold(0.0, (sum, item) => sum + item.partPayment);
 
     return SingleChildScrollView(
       child: Container(
@@ -202,7 +201,7 @@ class _PaymentTableState extends State<PaymentTable> {
 
   List<TableRow> _buildExpandableRows() {
     List<TableRow> rows = [];
-    Set<int> years = paymentSchedule.map((p) => p.year).toSet();
+    Set<int> years = loanDetailList.map((p) => p.year).toSet();
 
     for (int year in years) {
       rows.add(
@@ -218,7 +217,7 @@ class _PaymentTableState extends State<PaymentTable> {
 
       if (yearExpandedMap[year]!) {
         List<LoanDetail> yearPayments =
-            paymentSchedule.where((p) => p.year == year).toList();
+        loanDetailList.where((p) => p.year == year).toList();
         rows.addAll(yearPayments.map((p) => _buildDataRow(
               '  ${p.month}',
               p.principal,
@@ -312,61 +311,61 @@ class _PaymentTableState extends State<PaymentTable> {
         _buildDataCell(totalInterest),
         _buildDataCell(totalPartPayment),
         _buildDataCell(totalPrincipal + totalInterest + totalPartPayment),
-        _buildDataCell(paymentSchedule.last.outstanding),
+        _buildDataCell(loanDetailList.last.outstanding),
       ],
     );
   }
 
-  List<LoanDetail> generatePaymentSchedule(
-      double principalAmount,
-      double annualInterestRate,
-      double tenureInMonths,
-      List<LoanDetail> partPayments) {
-    List<LoanDetail> paymentSchedule = [];
-    double outstanding = principalAmount;
-
-    // Calculate EMI
-    double emi = calculateEmi(
-      principalAmount,
-      calculateRateOfInterestPerMonth(annualInterestRate),
-      calculatePower(
-          calculateRateOfInterestPerMonth(annualInterestRate), tenureInMonths),
-    );
-
-    // Start date for the payment schedule
-    DateTime startDate = selectedStartDate ?? DateTime.now();
-
-    for (int i = 0; i < tenureInMonths; i++) {
-      // Calculate interest, principal, and part payment
-      double interest = calculateInterest(
-          outstanding, calculateRateOfInterestPerMonth(annualInterestRate));
-      double principal = calculatePrinciple(emi, interest);
-      double partPayment = calculatePartPayment(
-          (i % 12) + 1, startDate.year + (i ~/ 12), partPayments);
-
-      // Update the outstanding balance after principal and part payment deductions
-      outstanding = calculateOutstanding(outstanding, principal + partPayment);
-
-      // Handle the current month and year
-      DateTime currentDate = startDate.add(Duration(days: i * 30));
-      String currentMonth = getMonth(currentDate);
-      int currentYear = currentDate.year;
-
-      // Create a new PartPayment entry for this month
-      LoanDetail payment = LoanDetail(
-        month: currentMonth,
-        year: currentYear,
-        principal: principal.toPrecision(0),
-        interest: interest.toPrecision(0),
-        partPayment: partPayment,
-        outstanding: outstanding.toPrecision(0),
-        principleAmount: principalAmount,
-      );
-
-      // Add the payment for this month to the schedule
-      paymentSchedule.add(payment);
-    }
-
-    return paymentSchedule;
-  }
+  // List<LoanDetail> generatePaymentSchedule(
+  //     double principalAmount,
+  //     double annualInterestRate,
+  //     double tenureInMonths,
+  //     List<LoanDetail> partPayments) {
+  //   List<LoanDetail> paymentSchedule = [];
+  //   double outstanding = principalAmount;
+  //
+  //   // Calculate EMI
+  //   double emi = calculateEmi(
+  //     principalAmount,
+  //     calculateRateOfInterestPerMonth(annualInterestRate),
+  //     calculatePower(
+  //         calculateRateOfInterestPerMonth(annualInterestRate), tenureInMonths),
+  //   );
+  //
+  //   // Start date for the payment schedule
+  //   DateTime startDate = selectedStartDate ?? DateTime.now();
+  //
+  //   for (int i = 0; i < tenureInMonths; i++) {
+  //     // Calculate interest, principal, and part payment
+  //     double interest = calculateInterest(
+  //         outstanding, calculateRateOfInterestPerMonth(annualInterestRate));
+  //     double principal = calculatePrinciple(emi, interest);
+  //     double partPayment = calculatePartPayment(
+  //         (i % 12) + 1, startDate.year + (i ~/ 12), partPayments);
+  //
+  //     // Update the outstanding balance after principal and part payment deductions
+  //     outstanding = calculateOutstanding(outstanding, principal + partPayment);
+  //
+  //     // Handle the current month and year
+  //     DateTime currentDate = startDate.add(Duration(days: i * 30));
+  //     String currentMonth = getMonth(currentDate);
+  //     int currentYear = currentDate.year;
+  //
+  //     // Create a new PartPayment entry for this month
+  //     LoanDetail payment = LoanDetail(
+  //       month: currentMonth,
+  //       year: currentYear,
+  //       principal: principal.toPrecision(0),
+  //       interest: interest.toPrecision(0),
+  //       partPayment: partPayment,
+  //       outstanding: outstanding.toPrecision(0),
+  //       principleAmount: principalAmount,
+  //     );
+  //
+  //     // Add the payment for this month to the schedule
+  //     paymentSchedule.add(payment);
+  //   }
+  //
+  //   return paymentSchedule;
+  // }
 }
