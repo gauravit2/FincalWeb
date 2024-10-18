@@ -33,39 +33,41 @@ final List<String> tenureOptions = ['Month', 'Year'];
 
 var value;
 
-// String getMonth(DateTime date) {
-//   return DateFormat('MMM').format(date);
-// }
+/*
+ String getMonth(DateTime date) {
+ return DateFormat('MMM').format(date);
+}
 
-// int getYear(DateTime date) {
-//   return date.year;
-// }
+ int getYear(DateTime date) {
+ return date.year;
+}
+ double calculatePower(double roiPerMonth, double tenure) {
+ double power = pow(1 + roiPerMonth, tenure).toDouble();
+ print("power = $power");
+ return power;
+}
 
-// double calculatePower(double roiPerMonth, double tenure) {
-//   double power = pow(1 + roiPerMonth, tenure).toDouble();
-//   print("power = $power");
-//   return power;
-// }
+ double calculateEmi(double outstanding, double roiPerMonth, double power) {
+   return (outstanding * roiPerMonth * power) / (power - 1);
+ }
 
-// double calculateEmi(double outstanding, double roiPerMonth, double power) {
-//   return (outstanding * roiPerMonth * power) / (power - 1);
-// }
+ double calculateRateOfInterestPerMonth(double rateOfInterest) {
+   return (rateOfInterest / 12) / 100;
+ }
 
-// double calculateRateOfInterestPerMonth(double rateOfInterest) {
-//   return (rateOfInterest / 12) / 100;
-// }
+double calculateInterest(double outstanding, double roiPerMonth) {
+  return outstanding * roiPerMonth;
+ }
 
-// double calculateInterest(double outstanding, double roiPerMonth) {
-//   return outstanding * roiPerMonth;
-// }
+ double calculatePrinciple(double emi, double interest) {
+   return emi - interest;
+ }
 
-// double calculatePrinciple(double emi, double interest) {
-//   return emi - interest;
-// }
-//
-// double calculateOutstanding(double outstanding, double principle) {
-//   return outstanding - principle;
-// }
+ double calculateOutstanding(double outstanding, double principle) {
+  return outstanding - principle;
+ }
+
+ */
 
 double calculatePartPayment(
     int month, int year, List<LoanDetail> partPayments) {
@@ -105,14 +107,16 @@ class _PaymentTableState extends State<PaymentTable> {
   @override
   void initState() {
     super.initState();
-    // double tenureInMonths =
-        // widget.tenureType == "years" ? widget.tenure * 12 : widget.tenure;
-    // paymentSchedule = generatePaymentSchedule(
-    //   widget.principleAmount,
-    //   7.0, // Annual Interest Rate
-    //   tenureInMonths,
-    //   [], // Empty part payment list for simplicity
-    // );
+    /* double tenureInMonths =
+       widget.tenureType == "years" ? widget.tenure * 12 : widget.tenure;
+     paymentSchedule = generatePaymentSchedule(
+       widget.principleAmount,
+       7.0, // Annual Interest Rate
+       tenureInMonths,
+       [], // Empty part payment list for simplicity
+    );
+
+     */
 
     loanDetailList = widget.loanDetailList;
 
@@ -315,57 +319,59 @@ class _PaymentTableState extends State<PaymentTable> {
       ],
     );
   }
+/*
+   List<LoanDetail> generatePaymentSchedule(
+       double principalAmount,
+       double annualInterestRate,
+       double tenureInMonths,
+       List<LoanDetail> partPayments) {
+     List<LoanDetail> paymentSchedule = [];
+     double outstanding = principalAmount;
 
-  // List<LoanDetail> generatePaymentSchedule(
-  //     double principalAmount,
-  //     double annualInterestRate,
-  //     double tenureInMonths,
-  //     List<LoanDetail> partPayments) {
-  //   List<LoanDetail> paymentSchedule = [];
-  //   double outstanding = principalAmount;
-  //
-  //   // Calculate EMI
-  //   double emi = calculateEmi(
-  //     principalAmount,
-  //     calculateRateOfInterestPerMonth(annualInterestRate),
-  //     calculatePower(
-  //         calculateRateOfInterestPerMonth(annualInterestRate), tenureInMonths),
-  //   );
-  //
-  //   // Start date for the payment schedule
-  //   DateTime startDate = selectedStartDate ?? DateTime.now();
-  //
-  //   for (int i = 0; i < tenureInMonths; i++) {
-  //     // Calculate interest, principal, and part payment
-  //     double interest = calculateInterest(
-  //         outstanding, calculateRateOfInterestPerMonth(annualInterestRate));
-  //     double principal = calculatePrinciple(emi, interest);
-  //     double partPayment = calculatePartPayment(
-  //         (i % 12) + 1, startDate.year + (i ~/ 12), partPayments);
-  //
-  //     // Update the outstanding balance after principal and part payment deductions
-  //     outstanding = calculateOutstanding(outstanding, principal + partPayment);
-  //
-  //     // Handle the current month and year
-  //     DateTime currentDate = startDate.add(Duration(days: i * 30));
-  //     String currentMonth = getMonth(currentDate);
-  //     int currentYear = currentDate.year;
-  //
-  //     // Create a new PartPayment entry for this month
-  //     LoanDetail payment = LoanDetail(
-  //       month: currentMonth,
-  //       year: currentYear,
-  //       principal: principal.toPrecision(0),
-  //       interest: interest.toPrecision(0),
-  //       partPayment: partPayment,
-  //       outstanding: outstanding.toPrecision(0),
-  //       principleAmount: principalAmount,
-  //     );
-  //
-  //     // Add the payment for this month to the schedule
-  //     paymentSchedule.add(payment);
-  //   }
-  //
-  //   return paymentSchedule;
-  // }
+     // Calculate EMI
+     double emi = calculateEmi(
+       principalAmount,
+      calculateRateOfInterestPerMonth(annualInterestRate),
+      calculatePower(
+          calculateRateOfInterestPerMonth(annualInterestRate), tenureInMonths),
+    );
+
+     // Start date for the payment schedule
+     DateTime startDate = selectedStartDate ?? DateTime.now();
+
+     for (int i = 0; i < tenureInMonths; i++) {
+       // Calculate interest, principal, and part payment
+       double interest = calculateInterest(
+           outstanding, calculateRateOfInterestPerMonth(annualInterestRate));
+       double principal = calculatePrinciple(emi, interest);
+       double partPayment = calculatePartPayment(
+          (i % 12) + 1, startDate.year + (i ~/ 12), partPayments);
+
+   // Update the outstanding balance after principal and part payment deductions
+       outstanding = calculateOutstanding(outstanding, principal + partPayment);
+
+       // Handle the current month and year
+       DateTime currentDate = startDate.add(Duration(days: i * 30));
+       String currentMonth = getMonth(currentDate);
+       int currentYear = currentDate.year;
+
+       // Create a new PartPayment entry for this month
+       LoanDetail payment = LoanDetail(
+         month: currentMonth,
+         year: currentYear,
+         principal: principal.toPrecision(0),
+         interest: interest.toPrecision(0),
+         partPayment: partPayment,
+         outstanding: outstanding.toPrecision(0),
+         principleAmount: principalAmount,
+       );
+
+       // Add the payment for this month to the schedule
+       paymentSchedule.add(payment);
+     }
+
+     return paymentSchedule;
+   }
+
+ */
 }
