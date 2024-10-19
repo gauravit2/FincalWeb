@@ -38,8 +38,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
   bool showResult = false;
   DateTime? selectedStartDate;
 
-  double _principalInputValue = 1000.0;
-  int _tenureInputValue = 10;
+  int _tenureInputValue = 15;
 
   final List<String> tenureOptions = ['Month', 'Year'];
   List<LoanDetail> loanDetailList = <LoanDetail>[];
@@ -245,7 +244,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                             },
                             onSubmited: (value) {
                               setState(() {
-                                _principalInputValue = double.tryParse(value) ?? 0; // Store user input here
+                                tempPrincipalAmount = double.tryParse(value) ?? 0; // Store user input here
                               });
                             },
                           ),
@@ -506,7 +505,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                                         ),
                                         Text('Total Amount'),
                                         Spacer(),
-                                        Text(totalPayment.toString()),
+                                        Text(totalPayment.toStringAsFixed(0)),
                                       ],
                                     ),
                                     // Increase distance between the table and ad
