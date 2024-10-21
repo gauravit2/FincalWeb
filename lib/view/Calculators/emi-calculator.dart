@@ -1,13 +1,13 @@
 import 'package:fincalweb_project/controller/part_payment_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:fincalweb_project/components/emi_calculator_components/partpayment_table.dart';
+import 'package:fincalweb_project/components/emi_calculator_components/part_payment_table.dart';
 import 'package:fincalweb_project/helper/menu_bar.dart';
 import 'package:fincalweb_project/helper/size_config.dart';
 import 'package:fincalweb_project/helper/breadcrumb_navBar.dart';
 import 'package:fincalweb_project/helper/Calculate_button.dart';
 import 'dart:math';
-import 'package:fincalweb_project/components/emi_calculator_components/table.dart';
+import 'package:fincalweb_project/components/emi_calculator_components/loan_detail_table.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:get/get.dart';
 
@@ -86,7 +86,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
         mPrinciple = outstanding;
       }
        double partPayment = 0.0;
-      //double partPayment = calculatePartPayment(currentDateTime);
+      // double partPayment = calculatePartPayment(currentDateTime);
       if (emi > outstanding && partPayment != 0) {
         partPayment = 0;
         outstanding = outstanding - mPrinciple;
@@ -153,13 +153,6 @@ class _EmiCalculatorState extends State<EmiCalculator> {
   }
   double calculateOutstanding(double outstanding, double principle) {
     return outstanding - principle;
-  }
-
-  double calculatePartPayment(DateTime currEmiDateTime) {
-
-
-
-    return 0.0; // Ensure this is a double
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -536,7 +529,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                             ],
                           ),
                           SizedBox(height: 2.h),
-                          PaymentTable(
+                          LoanDetailTable(
                            // principleAmount: _principalController.text.isEmpty ? 0.0 : double.parse(_principalController.text.trim()),
                             loanDetailList: loanDetailList,
 

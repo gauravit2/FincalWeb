@@ -24,18 +24,18 @@ class LoanDetail {
   double get totalPayment => principal + interest + partPayment; // Compute on demand
 }
 
-class PaymentTable extends StatefulWidget {
+class LoanDetailTable extends StatefulWidget {
   final List<LoanDetail> loanDetailList;
 
-  const PaymentTable({
+  const LoanDetailTable({
     required this.loanDetailList,
   });
 
   @override
-  _PaymentTableState createState() => _PaymentTableState();
+  _LoanDetailTableState createState() => _LoanDetailTableState();
 }
 
-class _PaymentTableState extends State<PaymentTable> {
+class _LoanDetailTableState extends State<LoanDetailTable> {
   Map<int, bool> yearExpandedMap = {};
 
   @override

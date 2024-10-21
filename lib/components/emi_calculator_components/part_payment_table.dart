@@ -17,22 +17,22 @@ class PartPayment {
     this.endTimestamp = 0,
   });
 }
-class LoanCalculator {
+class PartPaymentHelper {
   List<PartPayment> listMonthlyPayment = [];
   List<PartPayment> listQuarterlyPayment = [];
   List<PartPayment> listYearlyPayment = [];
   Map<String, PartPayment> mapOneTimePayment = {};
 
-  bool isMonPay = false;
+  bool isMonthlyPay = false;
   bool isQuarterlyPay = false;
   bool isYearlyPay = false;
   bool isOneTimePay = false;
 
   double calculatePartPayment(DateTime emiCurrMonAndYear) {
-    double partpay = 0.0;
+    double partPayAmount = 0.0;
 
     // Monthly Payments
-    if (isMonPay) {
+    if (isMonthlyPay) {
       for (PartPayment partPayment in listMonthlyPayment) {
         DateTime startMonthlyDate = DateTime.fromMillisecondsSinceEpoch(partPayment.timestamp);
         int currMonth = emiCurrMonAndYear.month;
@@ -77,7 +77,7 @@ class LoanCalculator {
         }
 
         if (valid) {
-          partpay += partPayment.amount;
+          partPayAmount += partPayment.amount;
         }
       }
     }
@@ -91,7 +91,7 @@ class LoanCalculator {
             isSameMonth(emiCurrMonAndYear, quarterDate)) {
           int remainder = (quarterDate.month) % 3;
           if (currMonth % 3 == remainder) {
-            partpay += partPayment.amount;
+            partPayAmount += partPayment.amount;
           }
         }
       }
@@ -106,7 +106,7 @@ class LoanCalculator {
             isSameMonth(emiCurrMonAndYear, yearlyDate)) {
           int remainder = (yearlyDate.month) % 12;
           if (currMonth % 12 == remainder) {
-            partpay += partPayment.amount;
+            partPayAmount += partPayment.amount;
           }
         }
       }
@@ -116,11 +116,11 @@ class LoanCalculator {
     if (isOneTimePay) {
       String key = '${emiCurrMonAndYear.month}-${emiCurrMonAndYear.year}';
       if (mapOneTimePayment.containsKey(key)) {
-        partpay += mapOneTimePayment[key]!.amount; // Assuming the amount is not null
+        partPayAmount += mapOneTimePayment[key]!.amount; // Assuming the amount is not null
       }
     }
 
-    return partpay;
+    return partPayAmount;
   }
 
   // Helper method to check if two dates are in the same month and year
