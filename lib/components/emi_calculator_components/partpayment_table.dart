@@ -5,10 +5,139 @@ import 'package:intl/intl.dart';
 
 import '../../controller/part_payment_controller.dart';
 
+
+class PartPayment {
+  final int timestamp; // Store the timestamp of the payment
+  final double amount; // Amount of the part payment
+  final int endTimestamp; // Optional end date for the part payment
+
+  PartPayment({
+    required this.timestamp,
+    required this.amount,
+    this.endTimestamp = 0,
+  });
+}
+class LoanCalculator {
+  List<PartPayment> listMonthlyPayment = [];
+  List<PartPayment> listQuaterlyPayment = [];
+  List<PartPayment> listYearlyPayment = [];
+  Map<String, PartPayment> mapOneTimePayment = {};
+
+  bool isMonPay = false;
+  bool isQuaterlyPay = false;
+  bool isYearlyPay = false;
+  bool isOneTimePay = false;
+
+  double calculatePartPayment(DateTime emiCurrMonAndYear) {
+    double partpay = 0.0;
+
+    // Monthly Payments
+    if (isMonPay) {
+      for (PartPayment partPayment in listMonthlyPayment) {
+        DateTime startMonthlyDate = DateTime.fromMillisecondsSinceEpoch(partPayment.timestamp);
+        int currMonth = emiCurrMonAndYear.month;
+        int currYear = emiCurrMonAndYear.year;
+        int startMonth = startMonthlyDate.month;
+        int startYear = startMonthlyDate.year;
+
+        bool valid = false;
+
+        if (partPayment.endTimestamp > 0) {
+          DateTime endMonthlyDate = DateTime.fromMillisecondsSinceEpoch(partPayment.endTimestamp);
+          int endMonth = endMonthlyDate.month;
+          int endYear = endMonthlyDate.year;
+
+          if (currYear == startYear) {
+            if (currMonth >= startMonth) {
+              if (currYear == endYear) {
+                if (currMonth <= endMonth) {
+                  valid = true;
+                }
+              } else if (currYear < endYear) {
+                valid = true;
+              }
+            }
+          } else if (currYear > startYear) {
+            if (currYear == endYear) {
+              if (currMonth <= endMonth) {
+                valid = true;
+              }
+            } else if (currYear < endYear) {
+              valid = true;
+            }
+          }
+        } else {
+          if (currYear == startYear) {
+            if (currMonth >= startMonth) {
+              valid = true;
+            }
+          } else if (currYear > startYear) {
+            valid = true;
+          }
+        }
+
+        if (valid) {
+          partpay += partPayment.amount;
+        }
+      }
+    }
+
+    // Quarterly Payments
+    if (isQuaterlyPay) {
+      int currMonth = emiCurrMonAndYear.month;
+      for (PartPayment partPayment in listQuaterlyPayment) {
+        DateTime quarterDate = DateTime.fromMillisecondsSinceEpoch(partPayment.timestamp);
+        if (!emiCurrMonAndYear.isBefore(quarterDate) ||
+            isSameMonth(emiCurrMonAndYear, quarterDate)) {
+          int remainder = (quarterDate.month) % 3;
+          if (currMonth % 3 == remainder) {
+            partpay += partPayment.amount;
+          }
+        }
+      }
+    }
+
+    // Yearly Payments
+    if (isYearlyPay) {
+      int currMonth = emiCurrMonAndYear.month;
+      for (PartPayment partPayment in listYearlyPayment) {
+        DateTime yearlyDate = DateTime.fromMillisecondsSinceEpoch(partPayment.timestamp);
+        if (!emiCurrMonAndYear.isBefore(yearlyDate) ||
+            isSameMonth(emiCurrMonAndYear, yearlyDate)) {
+          int remainder = (yearlyDate.month) % 12;
+          if (currMonth % 12 == remainder) {
+            partpay += partPayment.amount;
+          }
+        }
+      }
+    }
+
+    // One-Time Payments
+    if (isOneTimePay) {
+      String key = '${emiCurrMonAndYear.month}-${emiCurrMonAndYear.year}';
+      if (mapOneTimePayment.containsKey(key)) {
+        partpay += mapOneTimePayment[key]!.amount; // Assuming the amount is not null
+      }
+    }
+
+    return partpay;
+  }
+
+  // Helper method to check if two dates are in the same month and year
+  bool isSameMonth(DateTime date1, DateTime date2) {
+    return date1.year == date2.year && date1.month == date2.month;
+  }
+}
+
+
+
+
+
+
+
 class PartPaymentTable extends StatefulWidget {
   @override
   _PartPaymentTableState createState() => _PartPaymentTableState();
-
 }
 
 final PartPaymentController controller = Get.find<PartPaymentController>();
@@ -20,6 +149,7 @@ class _PartPaymentTableState extends State<PartPaymentTable> {
   String _prePaymentType = 'Monthly';
   String? _amount;
 
+  // List to store part payment information
   List<Map<String, dynamic>> _paymentRows = [];
 
   // Function to show the date picker and set the selected date
@@ -60,7 +190,8 @@ class _PartPaymentTableState extends State<PartPaymentTable> {
           data: ThemeData.light().copyWith(
             primaryColor: Colors.teal,
             buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
-            colorScheme: ColorScheme.light(primary: Colors.teal).copyWith(secondary: Colors.teal),
+            colorScheme:
+            ColorScheme.light(primary: Colors.teal).copyWith(secondary: Colors.teal),
           ),
           child: child ?? Container(),
         );
@@ -133,25 +264,29 @@ class _PartPaymentTableState extends State<PartPaymentTable> {
                     Center(
                       child: Text(
                         row['prePaymentType'],
-                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
+                        style: TextStyle(
+                            color: Colors.black, fontWeight: FontWeight.w500),
                       ),
                     ),
                     Center(
                       child: Text(
                         row['amount'],
-                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
+                        style: TextStyle(
+                            color: Colors.black, fontWeight: FontWeight.w500),
                       ),
                     ),
                     Center(
                       child: Text(
                         DateFormat('dd/MM/yyyy').format(row['startingDate']),
-                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
+                        style: TextStyle(
+                            color: Colors.black, fontWeight: FontWeight.w500),
                       ),
                     ),
                     Center(
                       child: Text(
                         row['payingTerm'],
-                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
+                        style: TextStyle(
+                            color: Colors.black, fontWeight: FontWeight.w500),
                       ),
                     ),
                     Center(
@@ -159,19 +294,21 @@ class _PartPaymentTableState extends State<PartPaymentTable> {
                         row['customDate'] != null
                             ? DateFormat('dd/MM/yyyy').format(row['customDate'])
                             : 'N/A',
-                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
+                        style: TextStyle(
+                            color: Colors.black, fontWeight: FontWeight.w500),
                       ),
                     ),
                     Center(child: _buildActionButtonsCell(index)),
                   ]);
-                })
-                +
+                }) +
                 [
                   TableRow(children: [
-                    _buildDropdownCell(['Monthly', 'Quarterly', 'Yearly', 'One time only']),
+                    _buildDropdownCell(
+                        ['Monthly', 'Quarterly', 'Yearly', 'One time only']),
                     _buildTextFieldCell(),
                     _buildDateButtonCell(context, _selectedDate, _selectDate),
-                    _buildDropdownCell(['Tenure End', 'Custom Date'], isPayingTerm: true),
+                    _buildDropdownCell(['Tenure End', 'Custom Date'],
+                        isPayingTerm: true),
                     _buildCustomDateButtonCell(context),
                     _buildAddButtonCell(),
                   ]),
@@ -186,7 +323,7 @@ class _PartPaymentTableState extends State<PartPaymentTable> {
     return Container(
       padding: const EdgeInsets.all(8.0),
       color: Colors.teal.shade700,
-      child: Center( // Center the text inside the header cell
+      child: Center(
         child: Text(
           title,
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
@@ -196,14 +333,13 @@ class _PartPaymentTableState extends State<PartPaymentTable> {
     );
   }
 
-
   Widget _buildDropdownCell(List<String> items, {bool isPayingTerm = false}) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: DropdownButtonFormField<String>(
         value: isPayingTerm ? _payingTerm : _prePaymentType,
         decoration: InputDecoration(
-          fillColor: Colors.white, // White background color for the dropdown
+          fillColor: Colors.white,
           filled: true,
           border: OutlineInputBorder(
             borderSide: BorderSide(color: Colors.white),
@@ -217,7 +353,6 @@ class _PartPaymentTableState extends State<PartPaymentTable> {
         ),
         dropdownColor: Colors.white,
         isExpanded: true,
-        //underline: SizedBox(),
         items: items.map<DropdownMenuItem<String>>((String value) {
           return DropdownMenuItem<String>(
             value: value,
@@ -264,7 +399,8 @@ class _PartPaymentTableState extends State<PartPaymentTable> {
     );
   }
 
-  Widget _buildDateButtonCell(BuildContext context, DateTime? date, Function onPressed) {
+  Widget _buildDateButtonCell(
+      BuildContext context, DateTime? date, Function onPressed) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ElevatedButton(
@@ -273,7 +409,7 @@ class _PartPaymentTableState extends State<PartPaymentTable> {
           backgroundColor: Colors.white,
           padding: EdgeInsets.symmetric(vertical: 20.0),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(0.0), // Set circular radius to 0.0
+            borderRadius: BorderRadius.circular(0.0),
           ),
         ),
         child: Text(
@@ -288,22 +424,48 @@ class _PartPaymentTableState extends State<PartPaymentTable> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ElevatedButton(
-        onPressed: _payingTerm == 'Custom Date' ? () => _selectCustomDate(context) : null,
+        onPressed: _payingTerm == 'Custom Date'
+            ? () => _selectCustomDate(context)
+            : null,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white,
+          backgroundColor:
+          _payingTerm == 'Custom Date' ? Colors.white : Colors.grey.shade300,
           padding: EdgeInsets.symmetric(vertical: 20.0),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(0.0), // Set circular radius to 0.0
+            borderRadius: BorderRadius.circular(0.0),
           ),
         ),
         child: Text(
-          _customSelectedDate == null ? 'Select Date' : DateFormat('dd/MM/yyyy').format(_customSelectedDate!),
-          style: TextStyle(color: Colors.black, fontSize: 16),
+          _customSelectedDate == null
+              ? 'Custom Date'
+              : DateFormat('dd/MM/yyyy').format(_customSelectedDate!),
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+          ),
         ),
       ),
     );
   }
 
+  Widget _buildActionButtonsCell(int index) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        IconButton(
+          icon: Icon(Icons.edit, color: Colors.black),
+          onPressed: () {
+            _editRow(index);
+          },
+        ),
+        SizedBox(width: 3.0,),
+        IconButton(
+          icon: Icon(Icons.delete, color: Colors.black),
+          onPressed: () => _deleteRow(index),
+        ),
+      ],
+    );
+  }
 
   Widget _buildAddButtonCell() {
     return Padding( // Add padding to create space from the top
@@ -326,30 +488,6 @@ class _PartPaymentTableState extends State<PartPaymentTable> {
       ),
     );
   }
-
-
-
-
-
-  Widget _buildActionButtonsCell(int index) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        IconButton(
-          icon: Icon(Icons.edit, color: Colors.black),
-          onPressed: () {
-            _editRow(index);
-          },
-        ),
-        SizedBox(width: 3.0,),
-        IconButton(
-          icon: Icon(Icons.delete, color: Colors.black),
-          onPressed: () => _deleteRow(index),
-        ),
-      ],
-    );
-  }
-
   void _editRow(int index) {
     // Prepopulate the fields with existing values
     setState(() {

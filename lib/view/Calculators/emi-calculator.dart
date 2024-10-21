@@ -70,7 +70,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
     double tenure = (selectedTenure == 'Month') ? _tenureInputValue.toDouble() : _tenureInputValue * 12;
     double roiPerMonth = calculateRateOfInterestPerMonth(annualInterestRate);
     double power = calculatePower(roiPerMonth, tenure);
-    double emi = calculateEmi(outstanding, roiPerMonth, power);
+    emi = calculateEmi(outstanding, roiPerMonth, power);
     print("emi = $emi principle = $outstanding tenure = $tenure roi = $annualInterestRate");
     totalPrinciple = 0;
     totalPayment = 0;
@@ -538,6 +538,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                           PaymentTable(
                            // principleAmount: _principalController.text.isEmpty ? 0.0 : double.parse(_principalController.text.trim()),
                             loanDetailList: loanDetailList,
+
                             // principleAmount: tempPrincipalAmount,
                             // tenureType: selectedTenure,
                             // tenure: _tenureInputValue.toDouble(),
