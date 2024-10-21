@@ -28,7 +28,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
   late TextEditingController _startDateController;
   late TextEditingController _tenureController;
 
-  double tempPrincipalAmount = 5000.0;
+  double tempPrincipalAmount = 10000.0;
   double annualInterestRate = 7.0;
   String selectedTenure = 'Month';
   double emi = 0.0;
@@ -38,7 +38,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
   bool showResult = false;
   DateTime? selectedStartDate;
 
-  int _tenureInputValue = 15;
+  int _tenureInputValue = 10;
 
   final List<String> tenureOptions = ['Month', 'Year'];
   List<LoanDetail> loanDetailList = <LoanDetail>[];
