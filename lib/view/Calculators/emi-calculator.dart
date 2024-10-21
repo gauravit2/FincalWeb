@@ -98,11 +98,12 @@ class _EmiCalculatorState extends State<EmiCalculator> {
         } else
           outstanding -= partPayment;
       }
-      LoanDetail loanDetail = LoanDetail(month: getMonth(currentDateTime), year: getYear(currentDateTime), principal: mPrinciple,
-          interest: interest,
-          partPayment: partPayment,
-          outstanding: outstanding,
-          principleAmount: mPrinciple);
+      LoanDetail loanDetail = LoanDetail(month: getMonth(currentDateTime),
+          year: getYear(currentDateTime),
+          principal: mPrinciple.toPrecision(0),
+          interest: interest.toPrecision(0),
+          partPayment: partPayment.toPrecision(0),
+          outstanding: outstanding.toPrecision(0));
       loanDetailList.add(loanDetail);
       print("month = "+ loanDetail.month
           + " year = "+ loanDetail.year.toString()

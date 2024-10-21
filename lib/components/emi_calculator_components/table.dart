@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class LoanDetail {
-  final double principleAmount;
   final String month;
   final int year;
   final double principal;
@@ -19,8 +18,7 @@ class LoanDetail {
     required this.principal,
     required this.interest,
     required this.partPayment,
-    required this.outstanding,
-    required this.principleAmount,
+    required this.outstanding
   });
 
   double get totalPayment => principal + interest + partPayment; // Compute on demand
