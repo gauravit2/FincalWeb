@@ -19,12 +19,12 @@ class PartPayment {
 }
 class LoanCalculator {
   List<PartPayment> listMonthlyPayment = [];
-  List<PartPayment> listQuaterlyPayment = [];
+  List<PartPayment> listQuarterlyPayment = [];
   List<PartPayment> listYearlyPayment = [];
   Map<String, PartPayment> mapOneTimePayment = {};
 
   bool isMonPay = false;
-  bool isQuaterlyPay = false;
+  bool isQuarterlyPay = false;
   bool isYearlyPay = false;
   bool isOneTimePay = false;
 
@@ -83,9 +83,9 @@ class LoanCalculator {
     }
 
     // Quarterly Payments
-    if (isQuaterlyPay) {
+    if (isQuarterlyPay) {
       int currMonth = emiCurrMonAndYear.month;
-      for (PartPayment partPayment in listQuaterlyPayment) {
+      for (PartPayment partPayment in listQuarterlyPayment) {
         DateTime quarterDate = DateTime.fromMillisecondsSinceEpoch(partPayment.timestamp);
         if (!emiCurrMonAndYear.isBefore(quarterDate) ||
             isSameMonth(emiCurrMonAndYear, quarterDate)) {
