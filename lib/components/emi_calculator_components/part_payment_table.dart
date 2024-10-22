@@ -203,10 +203,10 @@ class _PartPaymentTableState extends State<PartPaymentTable> {
       });
     }
   }
-
   void _addRow() {
     if (_amount != null && _selectedDate != null) {
       setState(() {
+        // Add the new row to the list
         _paymentRows.add({
           'prePaymentType': _prePaymentType,
           'amount': _amount,
@@ -215,21 +215,33 @@ class _PartPaymentTableState extends State<PartPaymentTable> {
           'customDate': _payingTerm == 'Custom Date' ? _customSelectedDate : null,
         });
 
-        // Reset fields
+        // Check the last row (if it exists) to determine the default paying term and prepayment type
+        if (_paymentRows.isNotEmpty) {
+          var lastRow = _paymentRows.last;
+
+          // Set the paying term based on the previous row's custom date
+          _payingTerm = lastRow['customDate'] != null ? 'Custom Date' : 'Tenure End';
+
+          // Set the part payment type based on the previous row's prePaymentType
+          _prePaymentType = lastRow['prePaymentType'];
+        } else {
+          // Reset to default values if no rows are present
+          _payingTerm = 'Tenure End';
+          _prePaymentType = 'Monthly'; // Default part payment type
+        }
+
+        // Reset other fields
         _amount = null;
         _selectedDate = null;
         _customSelectedDate = null;
-        _payingTerm = 'Tenure End';
       });
     }
   }
-
   void _deleteRow(int index) {
     setState(() {
       _paymentRows.removeAt(index);
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -262,44 +274,60 @@ class _PartPaymentTableState extends State<PartPaymentTable> {
                   final row = _paymentRows[index];
                   return TableRow(children: [
                     Center(
-                      child: Text(
-                        row['prePaymentType'],
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.w500),
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 9.0), // Add top padding
+                        child: Text(
+                          row['prePaymentType'],
+                          style: TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.w500, fontSize: 16),
+                        ),
                       ),
                     ),
                     Center(
-                      child: Text(
-                        row['amount'],
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.w500),
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 9.0), // Add top padding
+                        child: Text(
+                          row['amount'],
+                          style: TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.w500,fontSize: 16),
+                        ),
                       ),
                     ),
                     Center(
-                      child: Text(
-                        DateFormat('dd/MM/yyyy').format(row['startingDate']),
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.w500),
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 9.0), // Add top padding
+                        child: Text(
+                          DateFormat('MM/yyyy').format(row['startingDate']),
+                          style: TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.w500,fontSize: 16),
+                        ),
                       ),
                     ),
                     Center(
-                      child: Text(
-                        row['payingTerm'],
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.w500),
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 9.0), // Add top padding
+                        child: Text(
+                          row['payingTerm'],
+                          style: TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.w500,fontSize: 16),
+                        ),
                       ),
                     ),
                     Center(
-                      child: Text(
-                        row['customDate'] != null
-                            ? DateFormat('dd/MM/yyyy').format(row['customDate'])
-                            : 'N/A',
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.w500),
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 9.0), // Add top padding
+                        child: Text(
+                          row['customDate'] != null
+                              ? DateFormat('MM/yyyy').format(row['customDate'])
+                              : 'Tenure End',
+                          style: TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.w500,fontSize: 16),
+                        ),
                       ),
                     ),
                     Center(child: _buildActionButtonsCell(index)),
                   ]);
+
                 }) +
                 [
                   TableRow(children: [
@@ -413,7 +441,7 @@ class _PartPaymentTableState extends State<PartPaymentTable> {
           ),
         ),
         child: Text(
-          date == null ? 'Select Date' : DateFormat('dd/MM/yyyy').format(date),
+          date == null ? 'Select Date' : DateFormat('MM/yyyy').format(date),
           style: TextStyle(color: Colors.black, fontSize: 16),
         ),
       ),
@@ -438,7 +466,7 @@ class _PartPaymentTableState extends State<PartPaymentTable> {
         child: Text(
           _customSelectedDate == null
               ? 'Custom Date'
-              : DateFormat('dd/MM/yyyy').format(_customSelectedDate!),
+              : DateFormat('MM/yyyy').format(_customSelectedDate!),
           style: TextStyle(
             color: Colors.black,
             fontSize: 16,
@@ -473,7 +501,7 @@ class _PartPaymentTableState extends State<PartPaymentTable> {
       child: Center( // Center the button
         child: ElevatedButton.icon(
           onPressed: _amount != null && _selectedDate != null ? _addRow : null,
-          icon: Icon(Icons.add, color: Colors.teal.shade800, size: 16),
+          //icon: Icon(Icons.add, color: Colors.teal.shade800, size: 16),
           label: Text('Add', style: TextStyle(color: Colors.teal.shade800, fontSize: 14)),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.white, // Button color set to white

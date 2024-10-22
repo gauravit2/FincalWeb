@@ -1,6 +1,7 @@
 import 'package:fincalweb_project/controller/part_payment_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart'; // Import the intl package
 
 class LoanDetail {
   final String month;
@@ -29,7 +30,11 @@ class LoanDetailTable extends StatefulWidget {
 
   const LoanDetailTable({
     required this.loanDetailList,
-  });
+    Key? key,
+  }) : super(key: key);
+
+  // Add a GlobalKey to access the state from outside
+  static final GlobalKey<_LoanDetailTableState> tableKey = GlobalKey();
 
   @override
   _LoanDetailTableState createState() => _LoanDetailTableState();
@@ -38,11 +43,14 @@ class LoanDetailTable extends StatefulWidget {
 class _LoanDetailTableState extends State<LoanDetailTable> {
   Map<int, bool> yearExpandedMap = {};
 
-  @override
-  void initState() {
-    super.initState();
-    // Initialize any required state
+  // Method to collapse all rows
+  void collapseAllRows() {
+    setState(() {
+      yearExpandedMap.clear(); // This will collapse all rows
+    });
   }
+
+  final NumberFormat numberFormat = NumberFormat.decimalPattern('en_IN'); // Use Indian format for commas
 
   @override
   Widget build(BuildContext context) {
@@ -172,26 +180,43 @@ class _LoanDetailTableState extends State<LoanDetailTable> {
           },
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 8),
-            color: Colors.teal.shade100,
+            color: Colors.teal.shade100, // Light teal background for year row
             child: Center(
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(year),
+                  Text(year,
+                    style: const TextStyle(fontSize: 16), // Increased text size
+                  ),
                   Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
                 ],
               ),
             ),
           ),
         ),
-        _buildDataCell(principalTotal),
-        _buildDataCell(interestTotal),
-        _buildDataCell(partPaymentTotal),
-        _buildDataCell(principalTotal + interestTotal + partPaymentTotal),
-        _buildDataCell(outstandingTotal),
+        _buildDataCellWithBgColor(principalTotal, Colors.teal.shade100),
+        _buildDataCellWithBgColor(interestTotal, Colors.teal.shade100),
+        _buildDataCellWithBgColor(partPaymentTotal, Colors.teal.shade100),
+        _buildDataCellWithBgColor(principalTotal + interestTotal + partPaymentTotal, Colors.teal.shade100),
+        _buildDataCellWithBgColor(outstandingTotal, Colors.teal.shade100),
       ],
     );
   }
+
+  // Reuse the method for creating a data cell with background color
+  Widget _buildDataCellWithBgColor(double value, Color bgColor) {
+    return Container(
+      color: bgColor, // Apply background color
+      padding: const EdgeInsets.all(8.0),
+      child: Center(
+        child: Text(
+          numberFormat.format(value), // Format the number with commas
+          style: const TextStyle(fontSize: 16), // Increased text size
+        ),
+      ),
+    );
+  }
+
 
   TableRow _buildDataRow(
       String month,
@@ -205,7 +230,7 @@ class _LoanDetailTableState extends State<LoanDetailTable> {
       children: [
         Container(
             padding: const EdgeInsets.symmetric(vertical: 8),
-            color: bgColor,
+            color: Colors.white, // White background for month row
             child: Center(child: Text(month))),
         _buildDataCell(principal),
         _buildDataCell(interest),
@@ -216,12 +241,19 @@ class _LoanDetailTableState extends State<LoanDetailTable> {
     );
   }
 
-  Widget _buildDataCell(double value) {
+  // Method for creating a data cell with specific text size
+  Widget _buildDataCell(double value, {double textSize = 14}) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Center(child: Text(value.toStringAsFixed(0))),
+      child: Center(
+        child: Text(
+          numberFormat.format(value), // Format the number with commas
+          style: TextStyle(fontSize: textSize), // Set the specified text size
+        ),
+      ),
     );
   }
+
 
   TableRow _buildTotalsRow() {
     double totalPrincipal = 0;
@@ -235,16 +267,19 @@ class _LoanDetailTableState extends State<LoanDetailTable> {
     }
 
     return TableRow(
-      decoration: BoxDecoration(color: Colors.teal.shade100),
+      decoration: BoxDecoration(color: Colors.grey.shade300),
       children: [
-        const Center(child: Text('Total')),
-        _buildDataCell(totalPrincipal),
-        _buildDataCell(totalInterest),
-        _buildDataCell(totalPartPayment),
-        _buildDataCell(totalPrincipal + totalInterest + totalPartPayment),
-        _buildDataCell(widget.loanDetailList.last.outstanding),
+        Padding(
+          padding: const EdgeInsets.only(top: 7.0), // Set top padding here
+          child: const Center(
+            child: Text('Total', style: TextStyle(fontSize: 18)), // Adjusted text size
+          ),),
+        _buildDataCell(totalPrincipal, textSize: 16),
+        _buildDataCell(totalInterest, textSize: 16),
+        _buildDataCell(totalPartPayment, textSize: 16),
+        _buildDataCell(totalPrincipal + totalInterest + totalPartPayment, textSize: 16),
+        _buildDataCell(widget.loanDetailList.last.outstanding, textSize: 16),
       ],
     );
   }
 }
-

@@ -42,6 +42,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
 
   final List<String> tenureOptions = ['Month', 'Year'];
   List<LoanDetail> loanDetailList = <LoanDetail>[];
+  final NumberFormat numberFormat = NumberFormat.decimalPattern('en_IN');
   var value;
 
   @override
@@ -54,7 +55,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
     // Set default date to current date
     selectedStartDate = DateTime.now();
     _startDateController = TextEditingController(
-      text: DateFormat('dd/MM/yyyy').format(selectedStartDate!),
+      text: DateFormat('MM/yyyy').format(selectedStartDate!),
     );
     _tenureController =
         TextEditingController(text: _tenureInputValue.toString());
@@ -166,7 +167,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
       setState(() {
         selectedStartDate = pickedDate;
         _startDateController.text =
-            DateFormat('dd/MM/yyyy').format(selectedStartDate!);
+            DateFormat('MM/yyyy').format(selectedStartDate!);
       });
     }
   }
@@ -274,17 +275,16 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                       SizedBox(height: 5.w),
                       Row(
                         children: [
+                          // Tenure Input Field
                           Flexible(
                             flex: 1,
                             child: Container(
-                              width: 54.w,
+                              width: 170, // Adjust the width as needed
                               child: TextFormField(
                                 controller: _tenureController,
                                 decoration: InputDecoration(
                                   labelText: "Enter Tenure",
-                                  hintText: selectedTenure == 'Month'
-                                      ? 'Enter months'
-                                      : 'Enter years',
+                                  hintText: selectedTenure == 'Month' ? 'Enter months' : 'Enter years',
                                   border: OutlineInputBorder(),
                                 ),
                                 keyboardType: TextInputType.number,
@@ -299,35 +299,45 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                                   _tenureInputValue = tenureValue; // Update the tenure value
                                   return null;
                                 },
-                                onChanged: (value) {
+                                onFieldSubmitted: (value) {
                                   setState(() {
                                     _tenureInputValue = int.tryParse(value) ?? 1;
-                                    calculateEMI(); // Recalculate EMI when the tenure changes
                                   });
                                 },
                               ),
                             ),
                           ),
-                          SizedBox(width: 2.w),
+                          SizedBox(width: 8), // Add some spacing
+                          // Tenure Type Dropdown Field
                           Flexible(
                             flex: 1,
                             child: Container(
-                              width: 54.w,
-                              child: _buildDropdownField(
-                                label: "Tenure Type",
+                              width: 170, // Adjust the width as needed
+                              child: DropdownButtonFormField<String>(
                                 value: selectedTenure,
-                                items: tenureOptions,
+                                items: tenureOptions.map((String option) {
+                                  return DropdownMenuItem<String>(
+                                    value: option,
+                                    child: Text(option),
+                                  );
+                                }).toList(),
                                 onChanged: (String? newValue) {
-                                  setState(() {
-                                    selectedTenure = newValue ?? selectedTenure;
-                                    calculateEMI(); // Recalculate EMI when the tenure type changes
-                                  });
+                                  if (newValue != null) {
+                                    setState(() {
+                                      selectedTenure = newValue;
+                                    });
+                                  }
                                 },
+                                decoration: InputDecoration(
+                                  labelText: "Tenure Type",
+                                  border: OutlineInputBorder(),
+                                ),
                               ),
                             ),
                           ),
                         ],
                       ),
+
                       SizedBox(height: 5.w),
                       PartPaymentTable(),
                       SizedBox(height: 5.w),
@@ -335,15 +345,21 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                         onPressed: () {
                           if (_formKey.currentState?.validate() ?? false) {
                             setState(() {
+                              // Collapse all rows in the LoanDetailTable
+                              LoanDetailTable.tableKey.currentState?.collapseAllRows();
+
                               // Update tempPrincipalAmount, interest with the new input
                               tempPrincipalAmount = double.tryParse(_principalController.text) ?? 0.0;
                               annualInterestRate  = double.tryParse(_interestRateController.text) ?? 0.0;
-                              calculateEMI(); // Recalculate EMI with the updated principal amount & interest rate
+
+                              // Recalculate EMI with the updated principal amount & interest rate
+                              calculateEMI();
                               showResult = true; // Show results after calculation
                             });
                           }
                         },
                       ),
+
                       SizedBox(height: 5.w),
                       Column(
                         // Start directly with Column
@@ -354,7 +370,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                             children: [
                               Expanded(
                                 child: Padding(
-                                  padding: EdgeInsets.only(right: 50.w),
+                                  padding: EdgeInsets.only(right: 0.w),
                                   child: Container(
                                     height: 7.w,
                                     decoration: BoxDecoration(
@@ -370,7 +386,6 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                                         ),
                                       ),
                                     ),
-
                                   ),
                                 ),
                               ),
@@ -379,166 +394,155 @@ class _EmiCalculatorState extends State<EmiCalculator> {
 
                           SizedBox(height: 5.w),
 
+                          // Row for Pie Chart, Investment Results, and Ad
                           Row(
-                            crossAxisAlignment: CrossAxisAlignment
-                                .start, // Align pie chart and details
+                            crossAxisAlignment: CrossAxisAlignment.start, // Align pie chart and details
                             children: [
                               // Pie chart section
-                              SizedBox(
-                                height: 30.w,
-                                width: 35.w, // Adjusted pie chart size
-                                child: PieChart(
-                                  PieChartData(
-                                    sections: [
-                                      PieChartSectionData(
-                                        color: Colors.green,
-                                        value:
-                                        totalPrinciple, // Principal Amount
-                                        title: '', // No titles in the slices
-                                        radius: 35,
+                              Expanded( // Use Expanded to take available space
+                                flex: 2, // Adjust the flex value as needed
+                                child: SizedBox(
+                                  height: 30.w, // Adjusted pie chart size
+                                  child: PieChart(
+                                    PieChartData(
+                                      sections: [
+                                        PieChartSectionData(
+                                          color: Colors.green,
+                                          value: totalPrinciple, // Principal Amount
+                                          title: '', // No titles in the slices
+                                          radius: 40,
+                                        ),
+                                        PieChartSectionData(
+                                          color: Colors.orangeAccent,
+                                          value: totalInterest, // Interest Amount
+                                          title: '',
+                                          radius: 40,
+                                        ),
+                                        PieChartSectionData(
+                                          color: Colors.blue,
+                                          value: double.tryParse(controller.partPaymentValue.value) ?? 0.0, // Part Payment Amount
+                                          title: '',
+                                          radius: 40,
+                                        ),
+                                      ],
+                                      centerSpaceRadius: 50,
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              SizedBox(width: 8.w), // Space between pie chart and investment results
+
+                              // Investment details section
+                              Expanded(
+                                // Use Expanded to take available space
+                                flex: 3, // Adjust the flex value as needed
+                                child: Container(
+                                  height: 145,
+                                  padding: EdgeInsets.all(12),
+                                  color: Colors.grey.shade50,
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Container(
+                                            padding: EdgeInsets.all(10),
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.rectangle,
+                                              color: Colors.green,
+                                            ),
+                                          ),
+                                          SizedBox(width: 12),
+                                          Text('Principle Amount'),
+                                          Spacer(),
+                                          Text('₹ ${numberFormat.format(totalPrinciple)}'), // Apply formatted number
+                                        ],
                                       ),
-                                      PieChartSectionData(
-                                        color: Colors.orangeAccent,
-                                        value: totalInterest, // Interest Amount
-                                        title: '',
-                                        radius: 35,
+                                      SizedBox(height: 12),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            padding: EdgeInsets.all(10),
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.rectangle,
+                                              color: Colors.orange,
+                                            ),
+                                          ),
+                                          SizedBox(width: 10),
+                                          Text('Interest Rate'),
+                                          Spacer(),
+                                          Text('₹ ${numberFormat.format(totalInterest)}'), // Apply formatted number
+                                        ],
                                       ),
-                                      PieChartSectionData(
-                                        color: Colors.blue,
-                                        value: double.tryParse(controller
-                                            .partPaymentValue.value) ??
-                                            0.0, // Interest Amount
-                                        title: '',
-                                        radius: 35,
+                                      SizedBox(height: 12),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            padding: EdgeInsets.all(10),
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.rectangle,
+                                              color: Colors.blue,
+                                            ),
+                                          ),
+                                          SizedBox(width: 10),
+                                          Text('Part payment'),
+                                          Spacer(),
+                                          Text('₹ ${numberFormat.format(double.parse(controller.partPaymentValue.value))}'), // Format and convert controller value
+                                        ],
+                                      ),
+                                      SizedBox(height: 12),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            padding: EdgeInsets.all(10),
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.rectangle,
+                                              color: Colors.blue.shade800,
+                                            ),
+                                          ),
+                                          SizedBox(width: 10),
+                                          Text('Total Amount'),
+                                          Spacer(),
+                                          Text('₹ ${numberFormat.format(totalPayment)}'),// Apply formatted number
+                                        ],
                                       ),
                                     ],
                                   ),
                                 ),
                               ),
-
-                              SizedBox(
-                                  width:
-                                  8.w), // Space between pie chart and table
-
-                              // Table section for investment details
-                              Container(
-                                width: 400,
-                                height: 145,
-                                padding: EdgeInsets.all(12),
-                                color: Colors.grey.shade100,
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                              shape: BoxShape.rectangle,
-                                              color: Colors.green),
-                                        ),
-                                        SizedBox(
-                                          width: 12,
-                                        ),
-                                        Text('Principle Amount'),
-                                        Spacer(),
-                                        Text(totalPrinciple.toString()),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 12,
-                                    ),
-                                    Row(
-                                      children: [
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                              shape: BoxShape.rectangle,
-                                              color: Colors.orange),
-                                        ),
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-                                        Text('Interest Rate'),
-                                        Spacer(),
-                                        Text(totalInterest.toString()),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 12,
-                                    ),
-                                    Row(
-                                      children: [
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                              shape: BoxShape.rectangle,
-                                              color: Colors.blue),
-                                        ),
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-                                        Text('Part payment'),
-                                        Spacer(),
-                                        Text(controller.partPaymentValue.value)
-                                      ],
-                                    ),
-
-                                    SizedBox(
-                                      height: 12,
-                                    ),
-                                    Row(
-                                      children: [
-                                        Container(
-                                          padding: EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                              shape: BoxShape.rectangle,
-                                              color: Colors.blue.shade800),
-                                        ),
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-                                        Text('Total Amount'),
-                                        Spacer(),
-                                        Text(totalPayment.toStringAsFixed(0)),
-                                      ],
-                                    ),
-                                    // Increase distance between the table and ad
-                                    SizedBox(width: 20.w),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(width: 15.w), // ad container
+                                SizedBox(width: 15.w), // Space between investment results and the ad container
+                              // Ad container
                               Container(
                                 width: 40.w, // Increased width for the ad
                                 height: 30.w, // Increased height for the ad
                                 decoration: BoxDecoration(
                                   color: Colors.teal.shade100,
                                   borderRadius: BorderRadius.circular(10),
-                                  border:
-                                  Border.all(color: Colors.teal.shade800),
+                                  border: Border.all(color: Colors.teal.shade800),
                                 ),
                                 child: Center(
                                   child: Text(
                                     "Ad",
                                     style: TextStyle(
-                                        fontSize: 2.5.t,
-                                        color: Colors.teal.shade700),
+                                      fontSize: 2.5.t,
+                                      color: Colors.teal.shade700,
+                                    ),
                                   ),
                                 ),
                               ),
                             ],
                           ),
-                          SizedBox(height: 2.h),
-                          LoanDetailTable(
-                           // principleAmount: _principalController.text.isEmpty ? 0.0 : double.parse(_principalController.text.trim()),
-                            loanDetailList: loanDetailList,
 
-                            // principleAmount: tempPrincipalAmount,
-                            // tenureType: selectedTenure,
-                            // tenure: _tenureInputValue.toDouble(),
+                          SizedBox(height: 2.h),
+
+                          LoanDetailTable(
+                            key: LoanDetailTable.tableKey,  // Assign the key here
+                            loanDetailList: loanDetailList,
                           ),
+
                         ],
                       ),
+
                     ],
                   ),
                 ),
@@ -596,7 +600,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
     required String label,
     required String value,
     required List<String> items,
-    required Function(String?) onChanged,
+    required Function(String?) onSubmitted,
   }) {
     return Flexible(
       flex: 1,
@@ -612,7 +616,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
             child: Text(item),
           );
         }).toList(),
-        onChanged: onChanged,
+        onChanged: onSubmitted,
       ),
     );
   }
