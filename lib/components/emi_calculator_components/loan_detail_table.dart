@@ -87,27 +87,27 @@ class _LoanDetailTableState extends State<LoanDetailTable> {
       children: const [
         Padding(
           padding: EdgeInsets.all(8.0),
-          child: Center(child: Text('Year', style: TextStyle(color: Colors.white))),
+          child: Center(child: Text('Year', style: TextStyle(color: Colors.white,fontSize: 16))),
         ),
         Padding(
           padding: EdgeInsets.all(8.0),
-          child: Center(child: Text('Principal', style: TextStyle(color: Colors.white))),
+          child: Center(child: Text('Principal\n    (A)', style: TextStyle(color: Colors.white,fontSize: 16))),
         ),
         Padding(
           padding: EdgeInsets.all(8.0),
-          child: Center(child: Text('Interest', style: TextStyle(color: Colors.white))),
+          child: Center(child: Text('Interest\n    (B)', style: TextStyle(color: Colors.white,fontSize: 16))),
         ),
         Padding(
           padding: EdgeInsets.all(8.0),
-          child: Center(child: Text('Part Payment', style: TextStyle(color: Colors.white))),
+          child: Center(child: Text('Part Payment\n         (C)', style: TextStyle(color: Colors.white,fontSize: 16))),
         ),
         Padding(
           padding: EdgeInsets.all(8.0),
-          child: Center(child: Text('Total Payment', style: TextStyle(color: Colors.white))),
+          child: Center(child: Text('Total Payment\n      (A+B+C)', style: TextStyle(color: Colors.white,fontSize: 16))),
         ),
         Padding(
           padding: EdgeInsets.all(8.0),
-          child: Center(child: Text('Outstanding', style: TextStyle(color: Colors.white))),
+          child: Center(child: Text('Outstanding', style: TextStyle(color: Colors.white,fontSize: 16))),
         ),
       ],
     );
@@ -242,7 +242,7 @@ class _LoanDetailTableState extends State<LoanDetailTable> {
   }
 
   // Method for creating a data cell with specific text size
-  Widget _buildDataCell(double value, {double textSize = 14}) {
+  Widget _buildDataCell(double value, {double textSize = 16}) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Center(
@@ -272,7 +272,7 @@ class _LoanDetailTableState extends State<LoanDetailTable> {
         Padding(
           padding: const EdgeInsets.only(top: 7.0), // Set top padding here
           child: const Center(
-            child: Text('Total', style: TextStyle(fontSize: 18)), // Adjusted text size
+            child: Text('Total', style: TextStyle(fontSize: 16)), // Adjusted text size
           ),),
         _buildDataCell(totalPrincipal, textSize: 16),
         _buildDataCell(totalInterest, textSize: 16),
