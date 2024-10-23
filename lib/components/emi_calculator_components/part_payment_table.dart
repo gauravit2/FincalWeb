@@ -297,7 +297,7 @@ class _PartPaymentTableState extends State<PartPaymentTable> {
                       child: Padding(
                         padding: const EdgeInsets.only(top: 9.0), // Add top padding
                         child: Text(
-                          DateFormat('MM/yyyy').format(row['startingDate']),
+                          DateFormat('MMM yyyy').format(row['startingDate']),
                           style: TextStyle(
                               color: Colors.black, fontWeight: FontWeight.w500,fontSize: 16),
                         ),
@@ -318,7 +318,7 @@ class _PartPaymentTableState extends State<PartPaymentTable> {
                         padding: const EdgeInsets.only(top: 9.0), // Add top padding
                         child: Text(
                           row['customDate'] != null
-                              ? DateFormat('MM/yyyy').format(row['customDate'])
+                              ? DateFormat('MMM yyyy').format(row['customDate'])
                               : 'Tenure End',
                           style: TextStyle(
                               color: Colors.black, fontWeight: FontWeight.w500,fontSize: 16),
@@ -441,7 +441,7 @@ class _PartPaymentTableState extends State<PartPaymentTable> {
           ),
         ),
         child: Text(
-          date == null ? 'Select Date' : DateFormat('MM/yyyy').format(date),
+          date == null ? 'Select Date' : DateFormat('MMM yyyy').format(date),
           style: TextStyle(color: Colors.black, fontSize: 16),
         ),
       ),
@@ -466,7 +466,7 @@ class _PartPaymentTableState extends State<PartPaymentTable> {
         child: Text(
           _customSelectedDate == null
               ? 'Custom Date'
-              : DateFormat('MM/yyyy').format(_customSelectedDate!),
+              : DateFormat('MMM yyyy').format(_customSelectedDate!),
           style: TextStyle(
             color: Colors.black,
             fontSize: 16,
