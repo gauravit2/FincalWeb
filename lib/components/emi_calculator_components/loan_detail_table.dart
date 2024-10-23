@@ -33,7 +33,6 @@ class LoanDetailTable extends StatefulWidget {
     Key? key,
   }) : super(key: key);
 
-  // Add a GlobalKey to access the state from outside
   static final GlobalKey<_LoanDetailTableState> tableKey = GlobalKey();
 
   @override
@@ -42,6 +41,13 @@ class LoanDetailTable extends StatefulWidget {
 
 class _LoanDetailTableState extends State<LoanDetailTable> {
   Map<int, bool> yearExpandedMap = {};
+  late bool hasPartPayments; // Flag to determine if there are part payments
+
+  @override
+  void initState() {
+    super.initState();
+    hasPartPayments = widget.loanDetailList.any((loan) => loan.partPayment > 0);
+  }
 
   // Method to collapse all rows
   void collapseAllRows() {
@@ -63,20 +69,22 @@ class _LoanDetailTableState extends State<LoanDetailTable> {
             color: Colors.teal.shade300,
             width: 1,
           ),
-          columnWidths: const {
+          // Remove const and make columnWidths dynamic
+          columnWidths: {
             0: FlexColumnWidth(1.5),
             1: FlexColumnWidth(2),
             2: FlexColumnWidth(2),
-            3: FlexColumnWidth(2),
-            4: FlexColumnWidth(2.5),
-            5: FlexColumnWidth(2),
+            if (hasPartPayments) 3: FlexColumnWidth(2), // Dynamically add part payment column
+            3: FlexColumnWidth(2.5), // Total Payment column (A+B+C)
+            4: FlexColumnWidth(2),   // Outstanding column
           },
           children: [
             _buildHeaderRow(),
             ..._buildExpandableRows(),
             _buildTotalsRow(), // Call the totals row directly
           ],
-        ),
+        )
+
       ),
     );
   }
@@ -84,34 +92,41 @@ class _LoanDetailTableState extends State<LoanDetailTable> {
   TableRow _buildHeaderRow() {
     return TableRow(
       decoration: BoxDecoration(color: Colors.teal.shade600),
-      children: const [
-        Padding(
+      children: [
+        const Padding(
           padding: EdgeInsets.all(8.0),
-          child: Center(child: Text('Year', style: TextStyle(color: Colors.white,fontSize: 16))),
+          child: Center(child: Text('Year', style: TextStyle(color: Colors.white, fontSize: 16))),
         ),
-        Padding(
+        const Padding(
           padding: EdgeInsets.all(8.0),
-          child: Center(child: Text('Principal\n    (A)', style: TextStyle(color: Colors.white,fontSize: 16))),
+          child: Center(child: Text('Principal\n    (A)', style: TextStyle(color: Colors.white, fontSize: 16))),
         ),
-        Padding(
+        const Padding(
           padding: EdgeInsets.all(8.0),
-          child: Center(child: Text('Interest\n    (B)', style: TextStyle(color: Colors.white,fontSize: 16))),
+          child: Center(child: Text('Interest\n    (B)', style: TextStyle(color: Colors.white, fontSize: 16))),
         ),
+        if (hasPartPayments) // Conditionally include the part payment column
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Center(child: Text('Part Payment\n         (C)', style: TextStyle(color: Colors.white, fontSize: 16))),
+          ),
         Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Center(child: Text('Part Payment\n         (C)', style: TextStyle(color: Colors.white,fontSize: 16))),
+          padding: const EdgeInsets.all(8.0),
+          child: Center(
+            child: Text(
+              hasPartPayments ? 'Total Payment\n      (A+B+C)' : 'Total Payment\n       (A+B)', // Conditionally change the text
+              style: const TextStyle(color: Colors.white, fontSize: 16),
+            ),
+          ),
         ),
-        Padding(
+        const Padding(
           padding: EdgeInsets.all(8.0),
-          child: Center(child: Text('Total Payment\n      (A+B+C)', style: TextStyle(color: Colors.white,fontSize: 16))),
-        ),
-        Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Center(child: Text('Outstanding', style: TextStyle(color: Colors.white,fontSize: 16))),
+          child: Center(child: Text('Outstanding', style: TextStyle(color: Colors.white, fontSize: 16))),
         ),
       ],
     );
   }
+
 
   List<TableRow> _buildExpandableRows() {
     List<TableRow> rows = [];
@@ -196,7 +211,8 @@ class _LoanDetailTableState extends State<LoanDetailTable> {
         ),
         _buildDataCellWithBgColor(principalTotal, Colors.teal.shade100),
         _buildDataCellWithBgColor(interestTotal, Colors.teal.shade100),
-        _buildDataCellWithBgColor(partPaymentTotal, Colors.teal.shade100),
+        if (hasPartPayments) // Only show the part payment column if it exists
+          _buildDataCellWithBgColor(partPaymentTotal, Colors.teal.shade100),
         _buildDataCellWithBgColor(principalTotal + interestTotal + partPaymentTotal, Colors.teal.shade100),
         _buildDataCellWithBgColor(outstandingTotal, Colors.teal.shade100),
       ],
@@ -234,7 +250,8 @@ class _LoanDetailTableState extends State<LoanDetailTable> {
             child: Center(child: Text(month))),
         _buildDataCell(principal),
         _buildDataCell(interest),
-        _buildDataCell(partPayment),
+        if (hasPartPayments) // Only show the part payment cell if it exists
+          _buildDataCell(partPayment),
         _buildDataCell(totalPayment),
         _buildDataCell(outstanding),
       ],
@@ -273,10 +290,12 @@ class _LoanDetailTableState extends State<LoanDetailTable> {
           padding: const EdgeInsets.only(top: 7.0), // Set top padding here
           child: const Center(
             child: Text('Total', style: TextStyle(fontSize: 16)), // Adjusted text size
-          ),),
+          ),
+        ),
         _buildDataCell(totalPrincipal, textSize: 16),
         _buildDataCell(totalInterest, textSize: 16),
-        _buildDataCell(totalPartPayment, textSize: 16),
+        if (hasPartPayments) // Only show the part payment total if it exists
+          _buildDataCell(totalPartPayment, textSize: 16),
         _buildDataCell(totalPrincipal + totalInterest + totalPartPayment, textSize: 16),
         _buildDataCell(widget.loanDetailList.last.outstanding, textSize: 16),
       ],
