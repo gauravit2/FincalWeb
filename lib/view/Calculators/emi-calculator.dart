@@ -58,7 +58,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
     // Set default date to current date
     selectedStartDate = DateTime.now();
     _startDateController = TextEditingController(
-      text: DateFormat('MM/yyyy').format(selectedStartDate!),
+      text: DateFormat('MMM yyyy').format(selectedStartDate!),
     );
     _tenureController =
         TextEditingController(text: _tenureInputValue.toString());
@@ -191,7 +191,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
       setState(() {
         selectedStartDate = pickedDate;
         _startDateController.text =
-            DateFormat('MM/yyyy').format(selectedStartDate!);
+            DateFormat('MMM yyyy').format(selectedStartDate!);
       });
     }
   }
@@ -232,7 +232,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                     ),
                     SizedBox(height: 2.w),
                     Text(
-                      "EMI calculator is a digital tool that helps you calculate your loan EMI using multiple part payments like Monthly, quarterly, yearly, onetime only for the amount borrowed. It thus helps you find out your monthly EMI outgo and plan your loan prepayment properly.",
+                      "EMI calculator is a digital tool that helps you calculate your loan EMI using multiple part payments like Monthly, quarterly, yearly, onetime only for the amount borrowed. It helps you to find out your monthly EMI easily and plan your loan repayment properly.",
                       textAlign: TextAlign.start,
                       style: TextStyle(fontSize: 1.1.t, color: Colors.black87),
                     ),
