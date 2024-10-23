@@ -114,7 +114,7 @@ class _LoanDetailTableState extends State<LoanDetailTable> {
           padding: const EdgeInsets.all(8.0),
           child: Center(
             child: Text(
-              hasPartPayments ? 'Total Payment\n      (A+B+C)' : 'Total Payment\n       (A+B)', // Conditionally change the text
+              hasPartPayments ? 'Total Payment\n      (A + B + C)' : 'Total Payment\n       (A + B)', // Conditionally change the text
               style: const TextStyle(color: Colors.white, fontSize: 16),
             ),
           ),
