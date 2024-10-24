@@ -41,33 +41,45 @@ class _EmiCalculatorState extends State<EmiCalculator> {
   bool showResult = false;
   DateTime? selectedStartDate;
 
-  int _tenureInputValue = 10;
+  int _tenureInputValue = 15;
 
   final List<String> tenureOptions = ['Month', 'Year'];
   List<LoanDetail> loanDetailList = <LoanDetail>[];
   final NumberFormat numberFormat = NumberFormat.decimalPattern('en_IN');
   var value;
 
-//toast method
-
-
-
   @override
   void initState() {
     super.initState();
 
-    _principalController =
-        TextEditingController(text: tempPrincipalAmount.toString());
-    _interestRateController =
-        TextEditingController(text: annualInterestRate.toString());
+    _principalController = TextEditingController(text: numberFormat.format(tempPrincipalAmount));
+    _interestRateController = TextEditingController(text: annualInterestRate.toString());
 
     // Set default date to current date
     selectedStartDate = DateTime.now();
     _startDateController = TextEditingController(
       text: DateFormat('MMM yyyy').format(selectedStartDate!),
     );
-    _tenureController =
-        TextEditingController(text: _tenureInputValue.toString());
+    _tenureController = TextEditingController(text: _tenureInputValue.toString());
+
+    _principalController.addListener(() {
+      String text = _principalController.text.replaceAll(',', ''); // Remove existing commas
+      if (text.isNotEmpty) {
+        setState(() {
+          _principalController.value = _principalController.value.copyWith(
+            text: numberFormat.format(int.parse(text)),
+            selection: TextSelection.collapsed(
+                offset: numberFormat.format(int.parse(text)).length),
+          );
+        });
+      }
+      void _onTenureChanged(String value) {
+        setState(() {
+          _tenureInputValue = int.tryParse(value) ?? 15; // Default to 15 if input is invalid
+        });
+      }
+    });
+
 
     // Calculate the EMI as soon as the widget is built
     calculateEMI();
@@ -75,9 +87,8 @@ class _EmiCalculatorState extends State<EmiCalculator> {
   }
 
   void calculateEMI() {
-    // Parse the principal amount from the controller's text
-    double outstanding =
-        double.tryParse(_principalController.text) ?? tempPrincipalAmount;
+    double outstanding = double.tryParse(_principalController.text.replaceAll(',', '')) ?? tempPrincipalAmount;
+    //double outstanding = double.tryParse(_principalController.text) ?? tempPrincipalAmount;
     double tenure = (selectedTenure == 'Month')
         ? _tenureInputValue.toDouble()
         : _tenureInputValue * 12;
@@ -340,7 +351,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                                 ],
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Please enter the tenure.';
+                                    return 'field is empty.';
                                   }
                                   int? tenureValue = int.tryParse(value);
                                   if (tenureValue == null || tenureValue <= 0) {
@@ -348,22 +359,22 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                                   }
                                   return null;
                                 },
-                                onFieldSubmitted: (value) {
+                                onChanged: (value) {
                                   int parsedValue = int.tryParse(value) ?? 0;
                                   if (parsedValue <= 0) {
-                                    showToast(context, "Please enter a valid Tenure.", icon: Icons.error);
+                                    showToast(context, "Field is empty.", icon: Icons.error);
                                   } else {
                                     setState(() {
                                       _tenureInputValue = parsedValue;
                                     });
-                                    showToast(context, "Tenure updated to $parsedValue months.", icon: Icons.check_circle);
+                                   // showToast(context, "Tenure updated to $parsedValue months.", icon: Icons.check_circle);
                                     calculateEMI(); // Recalculate EMI after tenure changes
                                   }
                                 },
                               ),
                             ),
                           ),
-                          SizedBox(width: 8),
+                      SizedBox(width: 8),
                           Flexible(
                             flex: 1,
                             child: Container(
@@ -602,6 +613,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                   LoanDetailTable(
                     key: LoanDetailTable.tableKey,
                     loanDetailList: loanDetailList,
+                    tenureInputValue: _tenureInputValue,
                   ),
                 ],
               ),

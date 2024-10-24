@@ -27,10 +27,12 @@ class LoanDetail {
 
 class LoanDetailTable extends StatefulWidget {
   final List<LoanDetail> loanDetailList;
+  final int tenureInputValue; // Add tenure as a parameter
 
   const LoanDetailTable({
     required this.loanDetailList,
     Key? key,
+    required this.tenureInputValue,
   }) : super(key: key);
 
   static final GlobalKey<_LoanDetailTableState> tableKey = GlobalKey();
