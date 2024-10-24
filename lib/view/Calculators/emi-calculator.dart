@@ -408,27 +408,27 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                       SizedBox(height: 5.w),
                       CalculateButton(
                         onPressed: () {
-                          int parsedValue = int.tryParse(_tenureController.text.trim()) ?? 0;
-                          if (parsedValue <= 0) {
-                            showToast(context, "Field is empty.", icon: Icons.error);
-                          } else {
+                          if (_principalController.text.isEmpty) {
+                            showToast(context,"Principle amount is empty");
+                          }else if(_interestRateController.text.isEmpty){
+                            showToast(context,"Interest rate is empty");
+                          }else if(_tenureController.text.isEmpty){
+                            showToast(context,"Tenure is empty");
+                          }else {
                             setState(() {
-                              _tenureInputValue = parsedValue;
-                            });
-                            // showToast(context, "Tenure updated to $parsedValue months.", icon: Icons.check_circle);
-                            calculateEMI(); // Recalculate EMI after tenure changes
-                          }
-                          if (!_principalController.text.isEmpty && !_interestRateController.text.isEmpty && !_tenureController.text.isEmpty) {
-                            setState(() {
-                              LoanDetailTable.tableKey.currentState?.collapseAllRows();
-                              tempPrincipalAmount = double.tryParse(_principalController.text) ?? 0.0;
-                              annualInterestRate = double.tryParse(_interestRateController.text) ?? 0.0;
+                              LoanDetailTable.tableKey.currentState
+                                  ?.collapseAllRows();
+                              tempPrincipalAmount =
+                                  double.tryParse(_principalController.text) ??
+                                      0.0;
+                              annualInterestRate = double.tryParse(
+                                  _interestRateController.text) ?? 0.0;
+                              _tenureInputValue =
+                                  int.tryParse(_tenureController.text.trim()) ??
+                                      0;
                               calculateEMI();
                               showResult = true;
                             });
-                          }
-                          else{
-                            showToast(context,"Field is empty");
                           }
                         },
                       ),
