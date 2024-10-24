@@ -359,7 +359,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                                   }
                                   return null;
                                 },
-                                onChanged: (value) {
+                                onFieldSubmitted: (value) {
                                   int parsedValue = int.tryParse(value) ?? 0;
                                   if (parsedValue <= 0) {
                                     showToast(context, "Field is empty.", icon: Icons.error);
@@ -408,6 +408,16 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                       SizedBox(height: 5.w),
                       CalculateButton(
                         onPressed: () {
+                          int parsedValue = int.tryParse(_tenureController.text.trim()) ?? 0;
+                          if (parsedValue <= 0) {
+                            showToast(context, "Field is empty.", icon: Icons.error);
+                          } else {
+                            setState(() {
+                              _tenureInputValue = parsedValue;
+                            });
+                            // showToast(context, "Tenure updated to $parsedValue months.", icon: Icons.check_circle);
+                            calculateEMI(); // Recalculate EMI after tenure changes
+                          }
                           if (!_principalController.text.isEmpty && !_interestRateController.text.isEmpty && !_tenureController.text.isEmpty) {
                             setState(() {
                               LoanDetailTable.tableKey.currentState?.collapseAllRows();
@@ -553,7 +563,7 @@ class _EmiCalculatorState extends State<EmiCalculator> {
                                         SizedBox(width: 10),
                                         Text('Part payment'),
                                         Spacer(),
-                                        Text('₹ ${numberFormat.format(double.parse(controller.partPaymentValue.value))}'),
+                                        Text('₹ ${controller.partPaymentValue.value}'),
                                       ],
                                     ),
                                     SizedBox(height: 2),

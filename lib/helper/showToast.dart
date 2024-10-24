@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 void showToast(BuildContext context, String message, {IconData? icon}) {
   DelightToastBar(
-    snackbarDuration: const Duration(seconds: 5),
+    snackbarDuration: const Duration(seconds: 3),
     autoDismiss: true,
     builder: (context) => ToastCard(
       leading: Icon(icon ?? Icons.error, size: 28),

@@ -115,7 +115,7 @@ class _CustomMenuBarState extends State<CustomMenuBar> {
           listItemStyle: TextStyle(color: Colors.white),
           hintStyle: TextStyle(color: Colors.white),
           closedFillColor: Colors.transparent,
-          expandedFillColor: Colors.teal.shade400,
+          expandedFillColor: Colors.teal.shade800,
         ),
         hintText: title,
         items: items.keys.toList(),

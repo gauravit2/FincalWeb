@@ -4,6 +4,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
 
 import '../../controller/part_payment_controller.dart';
+import 'package:fincalweb_project/helper/showToast.dart';
 
 
 class PartPayment {
@@ -203,6 +204,7 @@ class _PartPaymentTableState extends State<PartPaymentTable> {
       });
     }
   }
+
   void _addRow() {
     if (_amount != null && _selectedDate != null) {
       setState(() {
@@ -496,12 +498,20 @@ class _PartPaymentTableState extends State<PartPaymentTable> {
   }
 
   Widget _buildAddButtonCell() {
-    return Padding( // Add padding to create space from the top
+    return Padding(
       padding: const EdgeInsets.only(top: 10.0), // Adjust this value as needed
-      child: Center( // Center the button
+      child: Center(
         child: ElevatedButton.icon(
-          onPressed: _amount != null && _selectedDate != null ? _addRow : null,
-          //icon: Icon(Icons.add, color: Colors.teal.shade800, size: 16),
+          onPressed: () {
+            // Check if _amount or _selectedDate is null or empty
+            if (_amount!.isEmpty) {
+              showToast(context, 'Please enter a part payment amount.', icon: Icons.error_outline);
+            } else if (_selectedDate == null) {
+              showToast(context, 'Please select a date.', icon: Icons.error_outline);
+            } else {
+              _addRow(); // Call _addRow if validation passes
+            }
+          },
           label: Text('Add', style: TextStyle(color: Colors.teal.shade800, fontSize: 14)),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.white, // Button color set to white
@@ -511,11 +521,11 @@ class _PartPaymentTableState extends State<PartPaymentTable> {
               borderRadius: BorderRadius.circular(0.0), // Square corners
             ),
           ),
-
         ),
       ),
     );
   }
+
   void _editRow(int index) {
     // Prepopulate the fields with existing values
     setState(() {

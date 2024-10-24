@@ -211,12 +211,47 @@ class _LoanDetailTableState extends State<LoanDetailTable> {
             ),
           ),
         ),
-        _buildDataCellWithBgColor(principalTotal, Colors.teal.shade100),
-        _buildDataCellWithBgColor(interestTotal, Colors.teal.shade100),
+        GestureDetector(
+            onTap: () {
+              setState(() {
+                yearExpandedMap[int.parse(year)] = !isExpanded;
+              }
+              );
+            },
+            child: _buildDataCellWithBgColor(principalTotal, Colors.teal.shade100)),
+        GestureDetector(
+            onTap: () {
+              setState(() {
+                yearExpandedMap[int.parse(year)] = !isExpanded;
+              }
+              );
+            },
+            child: _buildDataCellWithBgColor(interestTotal, Colors.teal.shade100)),
         if (hasPartPayments) // Only show the part payment column if it exists
-          _buildDataCellWithBgColor(partPaymentTotal, Colors.teal.shade100),
-        _buildDataCellWithBgColor(principalTotal + interestTotal + partPaymentTotal, Colors.teal.shade100),
-        _buildDataCellWithBgColor(outstandingTotal, Colors.teal.shade100),
+          GestureDetector(
+              onTap: () {
+                setState(() {
+                  yearExpandedMap[int.parse(year)] = !isExpanded;
+                }
+                );
+              },
+              child: _buildDataCellWithBgColor(partPaymentTotal, Colors.teal.shade100)),
+        GestureDetector(
+            onTap: () {
+              setState(() {
+                yearExpandedMap[int.parse(year)] = !isExpanded;
+              }
+              );
+            },
+            child: _buildDataCellWithBgColor(principalTotal + interestTotal + partPaymentTotal, Colors.teal.shade100)),
+        GestureDetector(
+            onTap: () {
+              setState(() {
+                yearExpandedMap[int.parse(year)] = !isExpanded;
+              }
+              );
+            },
+            child: _buildDataCellWithBgColor(outstandingTotal, Colors.teal.shade100)),
       ],
     );
   }
